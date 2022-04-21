@@ -53,15 +53,13 @@
         git remote add origin https://github.com/Junanjunan/airbnb-native2
         git push -u origin main
 
-    ** git add filename 으로는 되는데, git add . 이 안됨... 왜이러지...
-        git push origin master는 안되고 git push -u origin main 은 되는 상황
-
     ** 위의 과정을 해주었더니
         Branch 'main' set up to track remote branch 'main' from 'origin' 이라 나옴
 
     ** fatal: The current branch master has no upstream branch.
        To push the current branch and set the remote as upstream, use
         $ git push --set-upstream origin master
+        이렇게 나오는데 해보진 않음
 
     다음 설명은 airbnb-native 폴더에..?
 
