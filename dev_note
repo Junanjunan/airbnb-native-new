@@ -132,6 +132,10 @@
             AppLoading 이 expo 에서 분리되서 expo-app-loading 에 있나보네요.
             expo install expo-app-loading 해서 설치하시고
             import AppLoading from 'expo-app-loading' 해야 하네요.
+
+    expo-app-loading 오류
+        https://github.com/expo/expo/tree/main/packages/expo-app-loading
+        expo-app-loading is deprecated in favor of expo-splash-screen: use SplashScreen.preventAutoHideAsync() and SplashScren.hideAsync() instead.
                     
 
     이미지 불러오기
