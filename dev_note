@@ -72,7 +72,20 @@
             미리 만들어둔 expo 아이디(email or username 나는 wnsghksk@gmail.com or taltalrealty)로 로그인
             그러면 컴퓨터와 핸드폰이 연동된다.
 
+    * Android Studio 설치
+        - 기본경로에 사용자가 '탈탈'인데 아스키 코드 에러 떠서, Public으로 경로 수정해서 설치
+    * AMD 라서 Android Studio 오류 나는 경우
+        1. 제어판 - 프로그램 - 프로그램 및 기능 - windows 기능 켜기/끄기
+            Hyper-V , Windows 하이퍼바이저 플랫폼, 가상 머신 플랫폼 모두 체크 풀기
+        2. BIOS 설정
+            재부팅시 (나는 MSI - del 키) 바이오스 진입 - Advanced - OC - CPU features - SVM Mode를 Enabled로 해준다.
 
+    * AVD ~ terminated 되는 문제 
+        - 경로 문제였음(나의 경우)
+            - 기존 설치했던 것 모두 지우고
+            - 고급 설정에 사용자 변수에 C:\avd 추가(임의로 하면 됨)
+            - android studio 설치는 기본 설정으로 (C:\Programfiles~~) 설치해주고
+            - android 실행후 sdk manager로 들어가서 추가 파일들 설치해줄때 경로를 내가 환경변수에 추가한 경로(C:\avd)에 설치
 
 # 6.2 Preloading Images
     
