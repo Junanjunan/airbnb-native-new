@@ -1,3 +1,10 @@
+** const [item, setItem] = useState()
+    내가 이해한 걸로는
+        useState() -> 괄호 안의 값을 return 하는 것
+        예를 들어 useState(False) 는 False
+        useState(0)은 0
+        useState(item + 1) = item + 1
+
 ** 핸드폰에서 Expo가 저절로 꺼지는 오류 발생시
     오타가 생겼을 때 오타 수정해주니 해결되었음 (alignItems: "Center" 를 "center" 로 바르게 고쳤더니 해결됨)
 
@@ -136,7 +143,11 @@
     expo-app-loading 오류
         https://github.com/expo/expo/tree/main/packages/expo-app-loading
         expo-app-loading is deprecated in favor of expo-splash-screen: use SplashScreen.preventAutoHideAsync() and SplashScren.hideAsync() instead.
-                    
+
+        -> expo install expo-splash-screen
+        -> 오류가 발생해서 npm audit fix --force 를 했더니, npm start가 안되었음
+        -> $ npm install 해서 수정해보고도 안됨
+        -> $ expo update 를 하니 작동함 (package.json이 expo가 ^1.00 에서 ^44.0.0 으로 바뀌고 새로 설치됨)
 
     이미지 불러오기
     (App.js)
