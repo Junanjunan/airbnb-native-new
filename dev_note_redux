@@ -1,0 +1,178 @@
+생활코딩 위주로 참고
+
+공식 사이트: https://redux.js.org/
+
+store 안의 있는 state를 변경시킬수 있는 것은 reducer 만 가능
+
+
+주요 기능
+
+    store
+        - state, reducer, getState, subscribe, dispatch 를 묶은 것
+        - 예시
+            var store = Redux.createStore(reducer);
+
+    state
+        - 다루고자 하는 주요한 상태(값)
+
+    reducer
+        - state를 다룰 수 있는(변동 시킬 수 있는) 함수
+        - reducer의 return값이 새로운 state의 값이 된다.
+        - 예시
+            function reducer(oldState, action){
+                //...
+            }
+
+            var store = Redux.createStore(reducer)
+
+    getState
+        - state 값을 가져오는 함수?
+
+    render
+        - (store 밖에서) getState를 실행시킬 수 있는 함수
+        - 
+        - 예시
+            function render(){
+                var state = store.getState();
+                //...
+                document.querySelector('#app').innerHTML = '<h1>WEB</h1>...'
+            }
+
+    subscribe
+        - state 값이 변했을 때 render 함수를 호출 해주는 함수
+        - 예시
+            store.subscribe(render);
+
+    action
+        - dispatch에 전달되어 지는 객체
+
+    dispatch
+        - 두가지 기능이 있다.
+            1. reducer를 호출(해서 state 값을 바꾼다.)
+                - dispatch가 reducer를 호출할때 2개의 값을 전달한다.
+                    1) 현재의 state 값
+                    2) action
+            2. 1의 작업이 끝난 후 subscribe를 호출(해서 render 함수를 호출해준다.)
+        - 예시 1
+            <form onsubmit = "
+                //...
+                store.dispatch({type:'create', payload:{title:title, desc:desc}});
+            ">
+            -> dispatch() 안의 객체({type:'create', payload:{title:title, desc:desc}) 를 action 이라 한다.
+        - 예시 2
+            function reducer(state, action){
+                if(action.type === 'create'){
+                    var newContents = oldState.contents.concat();
+                    var newMaxId = oldState.maxId+1;
+                    newContents.push({id:newMaxId, title:action.payload});
+                    return Object.assign({}, state, {
+                        contents:newContents,
+                        maxId:newMaxId,
+                        mode:'read',
+                        selectedId:newMaxId
+                    });
+                }
+            }
+
+
+
+예시
+
+<body>
+    <style>
+        .container {
+            border: 5px solid black;
+            padding: 10px;
+        }
+    </style>
+    <div id="red"></div>
+    <script>
+        function reducer(state, action){
+            if(state === undefined){
+                return {color:'yellow'}
+            }
+            if(action.type === 'CHANGE_COLOR'){
+                state.color = 'red';
+            }
+            return state;
+        }
+
+        var store = Redux.createStore(reducer);
+
+        // console.log(store.getState());
+
+        function red() {
+            var state = store.getState();
+            document.querySelector('#red').innerHTML = `
+                    <div class="container" id="component_red" style="background-color:${state.color}">
+                        <input type="button" value="fire" onclick="store.dispatch({type:'CHANGE_COLOR', color:'red'});">
+                    </div>
+                `;
+        }
+        
+        red();
+    </script>
+</body>
+
+* 위에는 state값을 직접 다루었는데, state 값을 직접 변경해서 return 하지 말고,
+  state 값을 복사하고, 복사한 것을 변경해서 그 값을 return 하자.
+  이렇게 원본을 남겨놔야, redo, undo, hot module(?) 등의 기능을 사용하기가 좋다.
+
+    객체를 복제할 때:
+        Object.assign({}. {name:'egoing'}, {city:'seoul'}); // 첫번째 인자에 반드시 빈 객체 주어야 함, 두번째 인자에는 빈 객체에 복제할 속성을 준다. (Object.assign()의 return값은 첫번째 인자이다.)
+            -> 값이 {name:'egoing', city:'seoul'} 로 나올것이다. 
+
+        function reducer(state, action){
+                if(state === undefined){
+                    return {color:'yellow'}
+                }
+                if(action.type === 'CHANGE_COLOR'){
+                    newState = Object.assign({}, state, {color:action.color});
+                    state.color = 'red';
+                }
+                return newState;
+            }
+
+    
+* render를 subscribe에 등록시키는 것:
+    store.subscribe(red);
+
+
+전체 다시
+<body>
+    <style>
+        .container {
+            border: 5px solid black;
+            padding: 10px;
+        }
+    </style>
+    <div id="red"></div>
+    <script>
+        function reducer(state, action){
+                if(state === undefined){
+                    return {color:'yellow'}
+                }
+                if(action.type === 'CHANGE_COLOR'){
+                    newState = Object.assign({}, state, {color:action.color});
+                    state.color = 'red';
+                }
+                return newState;
+            }
+
+        var store = Redux.createStore(reducer);
+
+        // console.log(store.getState());
+
+        function red() {
+            var state = store.getState();
+            document.querySelector('#red').innerHTML = `
+                    <div class="container" id="component_red" style="background-color:${state.color}">
+                        <input type="button" value="fire" onclick="store.dispatch({type:'CHANGE_COLOR', color:'red'});">
+                    </div>
+                `;
+        }
+        
+        store.subscribe(red);
+        red();
+    </script>
+</body>
