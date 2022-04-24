@@ -1,0 +1,25 @@
+* useState
+    const [item, setItem] = useState(a);
+
+        ->  a: item의 default 값
+            setItem: function
+                    setItem(item)
+                    ex) setItem(a+1) => 새로운 item의 값이 된다.
+
+
+    item, setItem : 이름 붙이는 것은 자유
+
+    만약 item만 쓰고 싶다면
+    const item = useState(a)[0] 또는
+    const item = useState(a)[1] (밑에는 function을 수정하고 싶을때?)
+
+
+* useEffect
+    - useEffect(function, deps)
+    - function: 수행하고자 하는 작업
+    - deps: 배열 형태이며, 배열 안에는 검사하고자 하는 특정 값 or 빈배열 - dpes는 dependency 의미?
+    - deps 안의 값이 변할때(설정될 때?) function이 실행
+
+    https://xiubindev.tistory.com/100
+        컴포넌트가 화면에 처음 렌더링 될 때 한번만 실행하고 싶을때는 deps 에 빈배열
+        배열 생략시에는 리렌더링 될대 마다 실행된다.

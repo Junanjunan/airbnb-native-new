@@ -149,6 +149,9 @@
         -> $ npm install 해서 수정해보고도 안됨
         -> $ expo update 를 하니 작동함 (package.json이 expo가 ^1.00 에서 ^44.0.0 으로 바뀌고 새로 설치됨)
 
+        expo-splash-screen 사용법 어려워서 다시 Apploading 해보니 됨...
+            import AppLoading from 'expo-app-loading';
+
     이미지 불러오기
     (App.js)
         import { StatusBar } from 'expo-status-bar';
@@ -179,8 +182,8 @@
         }
         return isReady ? (<Text>I'm ready</Text>) : (
         <AppLoading                     // AppLoading -> expo documentation
-        onError={console.error}         // AppLoaing에 쓸 수 있는 것인 듯, Error가 발생할때 실행되는 함수 입력
-        onFinish={handleFinish}         // 역시 AppLoading에 쓸수 있는 것인 듯, Error 없이 완료되면 실행되는 함수 입력
+        onError={console.error}         // Error가 발생할때 실행되는 함수 입력
+        onFinish={handleFinish}         // Error 없이 완료되면 실행되는 함수 입력
         startAsync={loadAssets} />      // startAsync (function) -- A function that returns a Promise, and the Promise should resolve when the app is done loading required data and assets.
         );
         }
