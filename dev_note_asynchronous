@@ -1,0 +1,154 @@
+1. callback
+    https://www.youtube.com/watch?v=s1vpVCrT8f4&list=PLJR3rz_3ekgaKUHc7dPoeh9-3-iWqsHO7&index=1&t=289s
+
+    ex)
+        console.log('1');
+        setTimeout(function(){
+            console.log('2');
+        }, 1000);
+        console.log('3');
+
+        --> Console 결과값
+            1
+            3
+            2
+
+    위와 같이 시간이 지난 후에 다시 실행되는 함수를 Callback 함수라 한다.
+
+    좀더 간단하게 arrow 로 표시 가능
+        setTimeout(() => console.log('2'), 1000);
+
+    Callback은 비동기적일때만 쓰이나?
+    아니다. 두가지로 나뉜다
+    Synchronous callback / Asynchronous callback
+
+    Synchronous callback: 즉각적으로 실행
+        ex) 
+            console.log('1');
+            setTimeout(function(){
+                console.log('2');
+            }, 1000);
+            console.log('3');
+            
+            function printImmediately(print){
+                print();
+            }
+            printImmediately(() => console.log('hello'));
+
+            -> Console 결과값
+                1
+                3
+                hello
+                2
+
+    Asynchronous callback: 언제 실행될지 예측할 수 없음
+        ex)
+            console.log('1');
+            setTimeout(function(){
+                console.log('2');
+            }, 1000);
+            console.log('3');
+
+            function printWithDelay(print, timeout){
+                setTimeout(print, timeout);
+            }
+
+            printWithDelay(() => console.log('async callback'), 2000);
+
+            -> Console 결과값
+                1
+                3
+                hello
+                2
+                async callback
+
+
+    ---- Callback 지옥 함수를 체험해보자 ---
+
+    class UserStorage {
+        loginUser(id, password, onSuccess, onError){
+            setTimeout(()=>{
+                if(
+                    (id === 'ellie' && password =='dream') ||
+                    (id === 'coder' && password ==='academy')
+                ){
+                    onSuccess(id);
+                } else {
+                    onError(new Error('not found'));
+                }
+            }, 2000);
+        }
+
+        getRoles(user, onSuccess, onError){
+            setTimeout(() => {
+                if(user === 'ellie'){
+                    onSuccess({ name: 'ellie', role: 'admin'});
+                } else{
+                    onError(new Error('no access'));
+                }
+            }, 1000);
+        }
+    }
+
+    //  1) id, password를 받아서 / 2) login을 하고 / 3) Roles를 요청해서 받아오고 / 4) name, role을 출력해보자
+    // 위의 함수에 쭉 이어서
+
+    const userStorage = new UserStorage();
+    const id = prompt('enter your id');
+    const password = prompt('enter your password');
+    userStorage.loginUser(
+        id, 
+        password, 
+        user => {
+            userStorage.getRoles(
+                user, 
+                userWithRole => {
+                    alert(`Hello ${userWithRole.name}, you have a ${userWithRole.role} role`);
+                },
+                error => {
+                    console.log(error);
+                }
+            );
+        },
+        error => {console.log(error)}
+    );
+    
+
+2. Promise
+    https://www.youtube.com/watch?v=JB_yU6Oe2eE&list=PLJR3rz_3ekgaKUHc7dPoeh9-3-iWqsHO7&index=2
+    - Javascript에서 제공하는, 비동기를 간편하게 처리할 수 있도록 해주는 operation
+    - 장시간의 기능을 수행하고 나서 정상적으로 기능이 수행이 되었다면, 성공의 메시지와 함께 처리된 결과값 전달
+    - 실패하면 에러메시지 발생
+
+    - state(상태) 이해하기
+        state: pending -> fulfilled or rejected
+    - producer vs consumer 이해하기
+
+    1. Producer
+        - 새로운 Promise가 만들어질때, executor(resolve)가 자동적으로 실행된다. 주의
+        ex)
+            const promise = new Promise((resolve, reject) => {
+                // doing some heavy work()
+                console.log('doing something...');
+                setTimeout(() => {
+                    resolve('ellie');
+                }, 2000);
+            });
+
+    2. Consumers: then, catch, finally 등을 통해 값을 받아올 수 있다.
+        then - promise가 정상적으로 잘 수행이 되어서 resolve라는 콜백함수를 통해서 전달한 값('ellie')이 then의 parameter로 전달
+        ex)
+            const promise = new Promise((resolve, reject) => {
+                // doing some heavy work (network, read files...)
+                console.log('doing something...');
+                setTimeout(() => {
+                    resolve('ellie');
+                }, 2000);
+            });
+
+            promise.then((value) => {
+                console.log(value);
+            })
+
+    
+        * 10분 20초 부터 reject의 경우 실습
