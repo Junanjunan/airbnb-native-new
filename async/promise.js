@@ -9,5 +9,3 @@ const promise = new Promise((resolve, reject) => {
 promise.then((value) => {
     console.log(value);
 })
-
-
