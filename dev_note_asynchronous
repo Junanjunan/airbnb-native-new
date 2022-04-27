@@ -138,7 +138,7 @@
     2. Consumers: then, catch, finally 등을 통해 값을 받아올 수 있다.
         then - promise가 정상적으로 잘 수행이 되어서 resolve라는 콜백함수를 통해서 전달한 값('ellie')이 then의 parameter로 전달
         ex)
-            const promise = new Promise((resolve, reject) => {
+            const promise = new Promise((resolve, reject) => {      // resolve, reject : callback 함수를 받는 executor
                 // doing some heavy work (network, read files...)
                 console.log('doing something...');
                 setTimeout(() => {
@@ -151,4 +151,242 @@
             })
 
     
-        * 10분 20초 부터 reject의 경우 실습
+        reject - error 발생 reject
+        ex)
+            const promise = new Promise((resolve, reject) => {
+                // doing some heavy work (network, read files...)
+                console.log('doing something...');
+                setTimeout(() => {
+                    reject(new Error('no netwrok'));
+                }, 2000);
+            });
+
+            promise.then((value) => {
+                console.log(value);
+            }).catch(error => {         // then이 return하는 값이 promise이기 때문에 .catch를 쓸 수 있는 것이다 - chaning(체이닝)
+                console.log(error);
+            }).finally(() => {
+                console.log('finally');
+            });
+
+        finally - 성공하든 실패하든 마지막에 호출되어 지는 것
+
+    * Error Handling
+        1) 정상 작동
+            const getHen = () =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => resolve('hen'), 1000);
+                });
+
+            const getEgg = hen =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => resolve(`${hen} => egg`), 1000);
+                });
+
+            const cook = egg =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => resolve(`${egg} => fried`), 1000);
+                });
+
+            getHen()
+                .then(hen => getEgg(hen))
+                .then(egg => cook(egg))
+                .then(meal => console.log(meal));
+
+            // callback 함수를 전달할 때, 받아온 value를 바로 다음 함수에 하나를 호출하는 경우에는 value, 및 괄호를 다음과 같이 생략 가능
+
+            getHen().then(getEgg).then(cook).then(console.log);
+        
+        2) error 집어넣기
+            const getHen = () =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => resolve('hen'), 1000);
+                });
+
+            const getEgg = hen =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => reject(new Error(`error! ${hen} => egg`)), 1000);
+                });
+
+            const cook = egg =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => resolve(`${egg} => fried`), 1000);
+                });
+
+            getHen().then(getEgg).then(cook).then(console.log);
+
+            -> Uncaught ... 에러를 다뤄주지 않았다고 하면서 나옴
+
+            catch 이용하기
+            const getHen = () =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => resolve('hen'), 1000);
+                });
+
+            const getEgg = hen =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => reject(new Error(`error! ${hen} => egg`)), 1000);
+                });
+
+            const cook = egg =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => resolve(`${egg} => fried`), 1000);
+                });
+
+            getHen()
+                .then(getEgg)
+                .then(cook)
+                .then(console.log)
+                .catch(console.log);
+
+            // 또는 중간에 에러 발생시 대체할 것을 작성해주자
+
+
+3. async await
+    // async & await
+    // clear style of using promise
+
+    1) async
+        function fetchUser() {
+            return new Promise((resolve, reject) =>{
+                // do network request in 10 secs...
+            return 'ellie';
+            })
+        }
+
+        const user = fetchUser();
+        console.log(user);
+
+        위와 같이, reject와 resolve를 쓰지 않고 호출하면, console에서
+        Promise {<pending>} 이 출력
+            PromiseState의 종류 : pending, fulfilled, reject
+
+        다음과 같이 resolve를 사용하면
+
+            function fetchUser() {
+                return new Promise((resolve, reject) =>{
+                    // do network request in 10 secs...
+                resolve('ellie');
+                })
+            }
+
+            const user = fetchUser();
+            user.then(console.log);
+            console.log(user);
+
+        console에서 PromiseState의값이 fullfilled로 나옴
+
+        Promise를 이용하지 않고, function 앞에 async를 이용해주면 더 간단하게 표현 가능
+        async에 의해서 function 안의 코드 블록들이 Promise화 된다.
+
+            async function fetchUser(){
+                return 'ellie';
+            }
+
+            const user = fetchUser();
+            user.then(console.log);
+            console.log(user);
+
+        위와 같이 해주고 console을 보면
+        console.log(user)가 Promise를 return해주는 것 확인 가능
+
+    
+    2) await
+        ex)
+            function delay(ms){
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            // delay라는 함수는 정해진 시간(ms)이 지나면 resolve를 호출하는 Promise를 return
+
+            async function getApple(){
+                await delay(3000);
+                return 'apple';
+            }
+            // await delay(3000): 3초를 값으로 주는 delay를 기다린 후에(기다리면 Promise가 return 됨)
+            // return 'apple': 'apple' return
+
+            async function getBanana(){
+                await delay(3000);
+                return 'banana';
+            }
+
+        await라는 키워드는 async가 붙은 함수안에서만 사용 가능
+
+        async 없이 사용하면 다음과 똑같다.
+
+            function getBanana(){
+                return delay(3000)
+                .then(() => 'banana');
+            }
+
+        ex)
+            function delay(ms){
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            async function getApple(){
+                await delay(1000);
+                return 'apple';
+            }
+
+            async function getBanana(){
+                await delay(1000);
+                return 'banana';
+            }
+
+
+            function pickFruits(){
+                return getApple()
+                .then(apple => {
+                    return getBanana()
+                    .then(banana => `${apple} + ${banana}`);
+                });
+            }
+
+            pickFruits().then(console.log);
+
+            -> 2초후 콘솔에 apple + banana 출력
+
+            콜백 지옥같이 된걸 벗어나기 위해 function pickFruits()를 async를 활용해서 다음과 같이 하자
+
+            async function pickFruits(){
+                const apple = await getApple();
+                const banana = await getBanana();
+                return `${apple} + ${banana}`;
+            }
+
+            pickFruits().then(console.log);
+
+            그런데 위와 같이 하는 것은 getApple()을 기다리고 getBanana()를 기다리는 등, 시간이 많이 걸리는 문제가 있다.
+            따라서 코드가 실행되는데 서로 간섭이 없다면, 병렬적으로 동시에 진행되도록 하는 것이 좋다.
+                -> Promise 선언을 먼저 해주자
+                        - Promise 안에 들어있는 코드블록이 Promise를 선언해주는 순간 실행이 된다.
+
+                            async function pickFruits(){
+                                const applePromise = getApple();
+                                const bananaPromise = getBanana();
+                                const apple = await applePromise;
+                                const banana = await bananaPromise;
+                                return `${apple} + ${banana}`;
+                            }
+
+                            pickFruits().then(console.log);
+
+                        위와 같이 해주면 병렬적으로 처리되어 시간 단축
+
+                -> 그런데 이렇게 병렬적으로 처리가 가능할때 좀 더 깔끔하게 작성하는 방법이 있다.
+                    * useful Promise APIs
+                        - Promise.all() : Promise 배열을 전달하면, 모든 Promise들이 병렬적으로 다 실행될때까지 모아주는 기능
+    
+                            function pickAllFruits(){
+                                return Promise.all([getApple(), getBanana()])
+                                .then(fruits => fruits.join(' + '));        // join: 배열을 string으로 묶어주는 기능
+                            }
+
+                            pickAllFruits().then(console.log)
+            
+        * Promise.race([,]) 배열에 전달된 것중 가장 먼저 실행된 한가지만 받아오는 기능
+            function pickOnlyOne(){
+                return Promise.race([getApple(), getBanana()])
+            }
+    
