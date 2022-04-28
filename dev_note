@@ -336,7 +336,7 @@
         $ npm install @reduxjs/toolkit
     * Redux 설치
         $ npm install redux (또는 npm add redux ?)
-    * ?
+    * react-redux 설치
         $ npm install react-redux (또는 npm add react-redux ?)
 
     설치가 모두 끝나면 Redux 시작

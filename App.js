@@ -4,6 +4,7 @@ import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font'
 import { Ionicons } from '@expo/vector-icons';
+import Gate from './components/Gate';
 
 const cacheImages = images =>
 images.map(image => {
@@ -31,7 +32,7 @@ export default function App() {
     return Promise.all([...fontPromises, ...imagePromises])
   };
   return isReady ? (
-    <Text>Ready</Text>
+    <Gate />
   ) : (
   <AppLoading 
     onError={console.error} 
