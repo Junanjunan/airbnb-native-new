@@ -183,8 +183,8 @@
         return isReady ? (<Text>I'm ready</Text>) : (
         <AppLoading                     // AppLoading -> expo documentation
         onError={console.error}         // Error가 발생할때 실행되는 함수 입력
-        onFinish={handleFinish}         // Error 없이 완료되면 실행되는 함수 입력
-        startAsync={loadAssets} />      // startAsync (function) -- A function that returns a Promise, and the Promise should resolve when the app is done loading required data and assets.
+        onFinish={handleFinish}         // Error 없이 완료되면 실행되는 함수 입력 // / 아직 아무것도 loading하지 않았다. startAsync를 실행해주자
+        startAsync={loadAssets} />      // startAsync (function) -- A function that returns a Promise, and the Promise should resolve when the app is done loading required data and assets. 
         );
         }
 
@@ -215,6 +215,7 @@
 
     expo의 vector-icons를 이용할 것임
     설치: $ npm add @expo/vector-icons (또는 npm install @expo/vector-icons ?)
+    
 
     font 패지지도 필요
     설치: $ expo install expo-font     (expo에 있는 것을 설치할 떄, npm, yarn을 써도 되는데, expo install 을 사용하면, 호환이 되는 version을 찾아준다.)

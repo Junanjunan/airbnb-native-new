@@ -1,16 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
+import { Text, Image } from 'react-native';
 import React, { useState } from 'react';
 import AppLoading from 'expo-app-loading';
+import { Asset } from 'expo-asset';
+import * as Font from 'expo-font'
+import { Ionicons } from '@expo/vector-icons';
 
-const cacheImages = images => images.map(image =>{
-  if(typeof image === "string"){
-      return Image.prefetch(image);
-  } else {                         
-      return Asset.fromModule(image).downloadAsync();
+const cacheImages = images =>
+images.map(image => {
+  console.log(image);
+  if(typeof image === 'string'){
+    return Image.prefetch(image);
+  } else {
+    return Asset.fromModule(image).downloadAsync();
   }
-  });
+});
+
+const cacheFonts = fonts => fonts.map(font => Font.loadAsync(font));
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -18,9 +23,19 @@ export default function App() {
   const loadAssets = async () => {
     const images = [
     require("./assets/loginBg.jpg"),
-"http://logok.org/wp-content/uploads/2014/07/airbnb-logo-belo-219x286.png"    // url로 가져온 이미지
-];
-console.log(cacheImages(images));
-} 
-  return isReady ? (<Text>Ready</Text>) : (<AppLoading onError={console.error} onFinish={handleFinish}/>);
+    "http://logok.org/wp-content/uploads/2014/07/airbnb-logo-belo-219x286.png"    // url로 가져온 이미지
+    ];
+    const fonts = [Ionicons.font];
+    const imagePromises = cacheImages(images);
+    const fontPromises = cacheFonts(fonts);
+    return Promise.all([...fontPromises, ...imagePromises])
+  };
+  return isReady ? (
+    <Text>Ready</Text>
+  ) : (
+  <AppLoading 
+    onError={console.error} 
+    onFinish={handleFinish}
+    startAsync={loadAssets}
+    />);
 }
