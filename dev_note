@@ -905,6 +905,8 @@
 
         -> React Native Debugger가 state를 보여준다.
 
+        android emulator에서는 ctrl+m 을 누르면 Debug Remote JS 누를수 있는 창 올라옴
+
 
 # 7.4 Recap!
     preloading
@@ -1079,7 +1081,7 @@
         const isAndroid = Platform.OS === "android"
 
         export default () => (
-            <Auth.Navigator mode="modal" headerMode="float" screenOptions={{        // mode: 화면 전환되는 방식을 바꿔준다. 근데 나는 안바뀜...
+            <Auth.Navigator mode="modal" headerMode="float" screenOptions={{        // mode: 화면 전환되는 방식을 바꿔준다. 근데 나는 안바뀜... // Stack Navigator: 'mode="modal"' is deprecated. Use 'presentation: "modal"' in 'screenOptions' instead.
                 headerBackTitleVisible: false,
                 headerTransparent: true,
                 headerBackImage: () => ( 
@@ -1095,7 +1097,21 @@
                 <Auth.Screen name="SignIn" component={SignIn} />
                 <Auth.Screen name="SignUp" component={SignUp} />
             </Auth.Navigator>
-        );    
+        );  
+        
+        * 이제는 mode가 없어지고 screenOptions 안에 presentation으로 표현
+        export default () => (
+            <Auth.Navigator mode='card'
+            screenOptions={{
+                presentation: 'transparentModal',
+            }}
+            >
+                <Auth.Screen name="Welcome" component={Welcome} />
+                <Auth.Screen name="SignIn" component={SignIn} />
+                <Auth.Screen name="SignUp" component={SignUp} />
+            </Auth.Navigator>
+            );
+
 
 
 # 8.2 Welcome Screen part One
