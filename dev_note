@@ -350,7 +350,7 @@
             name: "users",
             initialState: {
                 isLoggedIn: false,
-                token: null             # 처음 상태에서 token: null -> token을 만든 이유는 token을 state에 저장하기 위해서다
+                token: null             // 처음 상태에서 token: null -> token을 만든 이유는 token을 state에 저장하기 위해서다
             },
             reducers: {                         
                 logIn(state, action){           // logIn의 경우도 state를 mutate하기 때문에 {}를 써서 바로 return하지 않는것으로 표현...?
@@ -364,7 +364,7 @@
             }
         })
 
-        export const {logIn, logOut} = userSlice.actions;      // console.log(userSlice.reducers) 하면 undefined, console.log(userSlice.actions) 하면 reducers에 표현한 것 그대로 나옴. 만들때는 reducers로 표현, 외부에서 쓸때는 actions로 표현 되는 것인듯...한데, 또 userSlice.recuer는 출력이 됨...
+        export const {logIn, logOut} = userSlice.actions;
         
         export default userSlice.reducer;
 
@@ -379,7 +379,7 @@
 
 7.1 login and logOut
 
-    rootReducer.js에서 모든 reducer들을 결합할 것이다
+    rootReducer.js에서 combineReducers를 통해 모든 reducer들을 결합할 것이다.
 
     (redux/store.js)
         import {configureStore} from "@reduxjs/toolkit";
@@ -401,6 +401,7 @@
         import { Ionicons } from '@expo/vector-icons';
         import { Text, Image } from 'react-native';
         import Gate from "./components/Gate";
+        import { Provider } from "react-redux";
         import store from "./redux/store";
 
         const cacheImages = images => images.map(image =>{
@@ -563,6 +564,10 @@
 
     useSelector를 이용해서 바로 state를 가져옴으로써, mapStateToProps와 connect를 안쓰고 짧게 할 수 있음 확인
 
+    - 이제 login 버튼과 logout 버튼을 만들자.
+
+        2가지 action을 dispatch 해야한다 - logIn 과 logOut (redux/usersSlice.js의 userSlice에 정의한 reducer의 logIn과 logOut 이용)
+
     TouchableOpacity, onPress를 이용할 건데
     dispatch에 접근할 수 있어야 한다. dispatch를 가져올건데, connect를 사용해서 mapDispatchToProps 로 가져올 수 있다.
     mapDispatchToProps 대신 useDispatch 사용하자(hook)
@@ -591,7 +596,7 @@
             );
         };
 
-    위와 같이 해주고 화면을 클릭해주면, 오류가 발생
+    위와 같이 해주고 화면을 클릭해주면, 오류가 발생 -> undefined is not an object(evaluating 'action.payload.token')
     (redux/usersSlice.js)를 보면
         import { createSlice } from "@reduxjs/toolkit"
 
@@ -643,32 +648,6 @@
             );
         };
 
-    이렇게 해줬더니 오류는 안뜨는데, 화면 전환이 안된다.. 강의에서는 되는데... 
-    (redux/usersSlice.js)를 다음과 같이 해주었더니 전환됨
-        import { createSlice } from "@reduxjs/toolkit"
-
-
-        const userSlice = createSlice({
-            name: "users",
-            initialState: {
-                isLoggedIn: false,
-                token: null
-            },
-            reducers: {
-                logIn(state, action){
-                    state.isLoggedIn = true;
-                    state.token = action.payload.token;
-                },
-                logOut(state, action){
-                    state.isLoggedIn = false;
-                    state.token = null;
-                }
-            }
-        })
-
-export const {logIn, logOut} = userSlice.actions;
-export default userSlice.reducer;
-
 
 # 7.2 redux-persist part One
     * 모바일에서 login 이 계속 유지되는 것을 해보도록 하자.
@@ -687,7 +666,7 @@ export default userSlice.reducer;
 
         const persistConfig = {                 // documentation과 똑같이 만들어보자
             key:'root',                         // 여기에 state를 어디에 저장하고 싶은지 Redux Persist 설정을 추가하면 된다. 우선 공식문서와 똑같이 작성
-            storage: AsyncStorage               // 이게 중요. 어떤 storage를 사용해서 어떻게 state를 저장하고 싶은지 설정해줘야 한다. documentation을 보면(https://github.com/rt2zz/redux-persist) 여러가지 storage를 이용할 수 있음을 확인 가능
+            storage: AsyncStorage               // 이게 중요. 어떤 storage를 사용해서 어떻게 state를 저장하고 싶은지 설정해줘야 한다. documentation을 보면(https://github.com/rt2zz/redux-persist) 여러가지 storage를 이용할 수 있음을 확인 가능 // 이 프로젝트에서는 React Native AsyncStorage 사용
         }
 
         const persistedReducer = persistReducer(persistConfig, rootReducer)     # rootReducer 자리: persist 하려는 reducer, persist는 save를 의미 -> Redux Persist에게 rootReducer에 변화가 있을 때마다 persistConfig에 설정한대로 저장하라고 하는 것임
@@ -722,15 +701,23 @@ export default userSlice.reducer;
         export default store;
 
         여기까지 했을때 오류는 없어야 한다.
-        # AsyncStore가 없는 걸로 나오면 (줄이 그어져서 나오면)
-            npm install @react-native-async-storage/async-storage
-            해주고 다시 import 해보면 될것임 (https://react-native-async-storage.github.io/async-storage/docs/install/)
-            나는 설치해줘도 없는걸로 뜬다... Expo에서 되긴 되는데...
+        # AsyncStore가 없는 걸로 나오면 (줄이 그어져서 나오면) 그 위에 갖다대면 다음과 같은 안내 나옴
+            (alias) type AsyncStorage = AsyncStorageStatic
+            (alias) const AsyncStorage: AsyncStorageStatic
+            import AsyncStorage
+            AsyncStorage has been extracted from react-native core and will be removed in a future release. It can now be installed and imported from @react-native-community/async-storage instead of 'react-native'.
+            @see — https://github.com/react-native-community/async-storage
+            @deprecated
+            @see — https://github.com/react-native-community/async-storage
+            @deprecated
+            'AsyncStorage' is deprecated.ts(6385)
+            index.d.ts(9367, 4): The declaration was marked as deprecated here
 
-        store와 관련된 문제가 하나 있는데, store도 persist 되어야 한다.
-
-        persistReducer는 reducer를 저장하고, persistStore는 store를 저장한다
-        그러니 persistedStore를 만들어보자
+            -> import { AsyncStorage } from "@react-native-community/async-storage"; 이렇게 하면 줄 없어짐
+            -> 근데 다시 실행하면 오류 발생 -> 검색해보니 없어졌다고 함
+            
+            ***-> 다시 import AsyncStorage from "@react-native-async-storage/async-storage"; ***
+            
 
     (redux/store.js)
         import { configureStore } from "@reduxjs/toolkit";
@@ -743,16 +730,17 @@ export default userSlice.reducer;
             storage: AsyncStorage
         }
 
-        const persistedReducer = persistReducer(persistConfig, rootReducer);
+        const persistedReducer = persistReducer(persistConfig, rootReducer);    //persist는 저장하는 것을 의미 persistedReducer: Redux Persist에게 rootReducer에 변화가 있을때마다 persistConfig에 설정한대로 매번 저장하라고 한것
 
         const store = configureStore({
             reducer: persistedReducer
         });
 
-        const persistedStore = persistStore(store);
+        const persistedStore = persistStore(store);     // reducer를 저장하는 persistReducer를 만든 것처럼 store를 저장하는 persistStore를 만들자
 
         export default store;
 
+    
     여기까지 하고 저장해보면, A non-seriaizable value was ~ 하고 오류가 뜨는데,
     usersSlice.js에서 export const { logIn, logOut } = userSlice.actions;를 통해 이미 action들을 export 했다.
     이 때문에 Redux tooklik이 Redux Persist가 가진 action들과 충돌해서 문제가 생긴 것이라 함
@@ -762,7 +750,8 @@ export default userSlice.reducer;
         import { persistStore, persistReducer } from "redux-persist";
         import rootReducer from "./rootReducer";
         import AsyncStorage from "@react-native-async-storage/async-storage";
-        import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from "redux-persist/es/constants";
+        // import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from "redux-persist/es/constants";
+        import {persistStore, persistReducer, FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE} from "redux-persist";  // 이렇게 해도 되는 듯 - 강의에서도 이렇게
 
         const persistConfig = {
             key: "root",                        
@@ -888,7 +877,7 @@ export default userSlice.reducer;
         }
         return isReady ? (
             <Provider store={store}>                  // isLoggedIn === false 상태이고
-            <PersistGate persistor={persistor}>       // isLoggedIn === true (핸드폰에서 state를 load 한 후) 상태로 된다. 이게 PersistGate를 사용하는 이유
+            <PersistGate persistor={persistor}>       // PersistGate는 persist 라는 prop이 필요 - store.js에 있는 persistor 를 이미 만들어주었다. isLoggedIn === true (핸드폰에 저장되어 있는 state를 load 한 후) 상태로 된다. 이게 PersistGate를 사용하는 이유
                 <Gate />
             </PersistGate>
             </Provider>
