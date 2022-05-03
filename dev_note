@@ -1200,6 +1200,8 @@
         const LOGO_URL = "https://blog.kakaocdn.net/dn/95jT7/btqQCAwEbDf/m30lmOx9xg7fKaPzQsFfJ1/img.jpg"
 
         const Container = styled.View`
+            justify-content: center;
+            align-items: center;
             flex: 1;
         `;
 
@@ -1251,7 +1253,7 @@
         const Text = styled.Text`
         `;
 
-        const Btn = ({onPress, text, accent = false}) => (
+        const Btn = ({onPress, text, accent = false}) => (      // accent의 default값으로 false 줌
             <TouchableOpacity onPress={onPress}>
                 <Button accent={accent}>
                     <Text accent={accent}>{text}</Text>
@@ -1539,6 +1541,17 @@
 
     마무리로 propTypes 처리해주자
 
+    (components/Auth/Input.js)
+        import Proptypes from "prop-types";
+
+        Input.propTypes = {
+            value: PropTypes.string,
+            placeholder: PropTypes.string,
+            isPassword: PropTypes.bool,
+            autoCapitalize: PropTypes.string,
+            stateFn: PropTypes.func.isRequired
+        };
+
 
 # 8.6 Bugfixing
 
@@ -1698,7 +1711,7 @@
         import React from "react";
         import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
-        export default ({children}) => {                    // children: 리액트에서 children이라는 prop은 컴포넌트 안에 있는 어떤 내용이든 자동적으로 가져와준다.
+        export default ({children}) => {                    // children: 리액트에서 children이라는 prop은 컴포넌트 안에 있는 어떤 내용이든 children의 자리로 가져와준다.
             const onPress = () => Keyboard.dismiss();
             return (
             <TouchableWithoutFeedback onPress={onPress}>
@@ -2332,7 +2345,7 @@
                 <DismissKeyboard>
                     <Container>
                         <StatusBar barStyle="light-content" />
-                        <KeyboardAvoidingView behavior='position'>
+                        <KeyboardAvoidingView behavior='position'>  // behavior = 'position' 해주니 키보드 올라갈때 화면이 엄청 많이 올라감
                         <InputContainer>
                             <Input 
                                 value={username} 

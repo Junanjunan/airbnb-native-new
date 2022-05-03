@@ -1,15 +1,15 @@
 import React from "react";
-import { Platform, View } from "react-native";
+import { View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Ionicons } from "@expo/vector-icons";
-import Welcome from "../screens/Welcome";
-import SignIn from "../screens/SignIn";
-import SignUp from "../screens/SignUp";
+import Welcome from "../screens/Auth/Welcome";
+import SignIn from "../screens/Auth/SignIn";
+import SignUp from "../screens/Auth/SignUp";
+import BackBtn from "../components/Auth/BackBtn";
 
 
 const Auth = createStackNavigator();
 
-const isAndroid = Platform.OS === "android";
+
 
 export default () => (
     <Auth.Navigator
@@ -19,14 +19,10 @@ export default () => (
         headerBackTitleVisible: false,
         headerTransparent: true,
         presentation: 'modal',
-        headerBackImage: () => (
-            <View style={{paddingLeft: 10}}>
-                <Ionicons 
-                    name = {isAndroid ? "md-arrow-down" : "ios-arrow-down"}
-                    size = {28}
-                />
-            </View>
-        )
+        headerTitleStyle:{
+            color: 'white',
+        },
+        headerBackImage: () => <BackBtn />
     }}
     >
         <Auth.Screen name="Welcome" component={Welcome} />
