@@ -18,9 +18,19 @@ const InputContainer = styled.View`
 export default () => {
     const [firstname, setFirstname] = useState("");
     const [lastname, setLastname] = useState("");
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const handleSubmit = () => alert(`${username}${password}`);
+    const handleSubmit = async () => {
+        if(
+            firstname===""||
+            lastname ===""||
+            email===""||
+            password===""
+            ){
+            alert("All fields are required.");
+            return;
+        }
+    };
     return(
         <DismissKeyboard>
             <Container>
@@ -40,10 +50,11 @@ export default () => {
                             stateFn={setLastname}
                         />
                         <Input 
-                            value={username} 
-                            placeholder="Username" 
+                            keyboardType={"email-address"}
+                            value={email} 
+                            placeholder="Email" 
                             autoCapitalize="none" 
-                            stateFn={setUsername}
+                            stateFn={setEmail}
                         />
                         <Input 
                             value={password} 
