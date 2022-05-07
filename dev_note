@@ -1898,6 +1898,8 @@
                     return regEx.test(email);
                 };
                 // 간단한 email validation 함수를 작성해준것임
+
+    // 빈칸 없도록하는 것과 email 인증하는 과정을 함수로 만들자 -> validateForm
                             
     (screens/Auth/SignUp.js)
         import React, { useState } from "react";
@@ -1949,7 +1951,7 @@
                         username: email,
                         password
                     });
-                    console.log(data);              // 이렇게 해주면 rest API로부터 여러가지 정보 얻어는데, 그중 접속상태를 알려주는 status 를 이용 할 것임  ->   const data는 const { status }로, console.log(data)는 console.log(status)로 바꿔서 유저생성할때 상태가 어떤지 확인할 것임
+                    console.log(data);              // 이렇게 해주면 rest API로부터 여러가지 정보 얻어는데, 그중 접속상태를 알려주는 status 를 이용 할 것임  ->   const data는 const { status }로, console.log(data)는 console.log(status)로 바꿔서 유저생성할때 상태가 어떤지 확인할 것임 201이면 정상적으로 생성된 것
                 } catch(e){
                     console.warn(e);
                 }
@@ -2008,9 +2010,9 @@
                     const baseUrl = "http://10.0.2.2:8000/api/v1";          # 127.0.0.1 대신 10.0.2.2 를 이용하니 emulator에서 user 생성 가능했음 https://stackoverflow.com/questions/5528850/how-do-you-connect-localhost-in-the-android-emulator. 아직 모바일은 해결 X
                     const fullUrl = `${baseUrl}${path}`;
                     if(method === "get" || method === "delete"){
-                        return axios[method](fullUrl, {headers});
+                        return axios[method](fullUrl, {headers});       //  axios.get() 
                     } else{
-                        return axios[method](fullUrl, data, {headers});
+                        return axios[method](fullUrl, data, {headers}); //  axios.post() 을하고 () 안을 보면 get 은 data? 가 없고, post는 data? 가 있다.
                     }
                 };
 
@@ -2022,13 +2024,15 @@
             * ngrok 이용해서 휴대폰 접속하기: https://wayhome25.github.io/django/2017/03/18/django-ep1-setting/
                 1. ngrok을 다운받고, 압축을 해재한 후, 실행파일을 manage.py가 있는 곳과 같은 경로에 둔다.
                 2. 실행: ngrok http 8000 (Django의 default 포트가 8000, 그리고 manage.py를 첫경로에서 실행했기 때문에 ./ngrok 등이 아니라 바로 ngrok http 8000 으로 실행)
-                3. http://~~.ngrok.io -> http://localhost:8000이 생기는데 이를 복사해서 (api.js)의 baseUrl에 이용
-                    const baseUrl = "http://~~.ngrok.io/api/v1";
-                *. python에서 allowed_host에 추가해줘야 한다.
+                3. Forwaring : https://~~.ngrok.io -> http://localhost:8000이 생기는데 이를 복사해서 (api.js)의 baseUrl에 이용
+                    const baseUrl = "https://~~.ngrok.io/api/v1";
+                *. python에서 allowed_host에 추가해줘야 한다. - 간편하게 '*' 추가
 
             위 방식으로 하면, 핸드폰, emulator 모두 api서버와 통신 된다.
             * 일정 시간 지나면 연결 끊기는 것 같음. 이럴때는 다시 url 받아서 교체해서 사용
-
+            
+            ngrok 사용방법 추가 설명
+            Web Interface http://127.0.0.1:4040 을 들어가보면, request 이력이 나오는데, 무엇이 구체적으로 잘못되었는지도 설명이 나옴
 
 # 8.9 Create Account part Two
     이번에는 state에 [loading, setLoading]을 입력해주자
@@ -2042,32 +2046,13 @@
     Btn에 loading이라는 prop 추가
 
     (screens/Auth/SignUp.js)
-        import React, { useState } from "react";
-        import { StatusBar, KeyboardAvoidingView } from "react-native";
-        import styled from "styled-components/native";
-        import Btn from "../../components/Auth/Btn";
-        import Input from "../../components/Auth/Input";
-        import DismissKeyboard from "../../components/DismissKeyboard";
-        import { isEmail } from "../../utils";
+        ...
         import { createAccount } from "../../api";
 
-        const Container = styled.View`
-            flex:1 ;
-            justify-content: center;
-            align-items: center;
-        `;
-
-        const InputContainer = styled.View`
-            margin-bottom: 30px;
-        `;
-
         export default (navigation) => {
-            const [firstName, setFirstname] = useState("");
-            const [lastName, setLastname] = useState("");
-            const [email, setEmail] = useState("");
-            const [password, setPassword] = useState("");
+            ...
             const [loading, setLoading] = useState(false);
-            const isFormValid = () =>{
+            const isFormValid = () =>{                      // validateForm 을 isFormValid 로 이름 변경
                 if(
                     firstName === "" || 
                     lastName === "" || 
@@ -2084,7 +2069,7 @@
                 return true;
             };
             const handleSubmit = async () => {
-                if (!isFormValid()){
+                if (!isFormValid()){                        // validateForm 을 isFormValid 로 이름 변경해주고, logic 변경
                     return;
                 };
                 setLoading(true);
@@ -2096,10 +2081,11 @@
                         username: email,
                         password
                     });
-                    if(status === 201){                 // status 201은 user가 잘 생성되었을 때 뜬다.
+                    console.log(status)
+                    if(status === 201 || status === 200){                 // status 201은 user가 잘 생성되었을 때 뜬다. 나는 200으로 뜸, 강의에서는 201 -> 위에서 console.log(status) 해서 확인후 변형 적용
                         alert("Account created. Sign in please.");
                         navigation.navigate("SignIn");      // screen에(screens 폴더에 있는 파일 말하는 것 같긴 함..) 다른 props를 입력할 수 있다. Sign Up은 screen이다(<Auth.Screen .. />으로 되어있음). Sign Up이 받을 수 있는 Prop은 navigation prop이다. SignUp.js에 SignIn으로 갈 수 있는 navigation.navigate를 사용할 수 있다. // 내가 작성한 것중 navigation.navigate를 검색해보면, prop이 기본적으로 navigation prop을 갖고 있고, 이 navigation prop을 통해서 원하는 화면으로 navigate 하는 것
-                    }
+                    }                                       // 갑자기 navigation을 import 같은거 하지도 않고 쓸 수 있는 이유? navigation/Auth.js를 보면 Welcome, SignIn, SignUp 을 Navigator 안의 Screen으로 이미 묶어놓은 상태라서 바로 쓸 수 있는 것인듯.
                     // go to Sign In
                 } catch(e){
                     alert(e);
@@ -2114,32 +2100,9 @@
                             <StatusBar barStyle="light-content" />
                                 <KeyboardAvoidingView>
                                 <InputContainer>
-                                    <Input 
-                                        value={firstName} 
-                                        placeholder="First name" 
-                                        autoCapitalize="words" 
-                                        stateFn={setFirstname}
-                                    />
-                                    <Input 
-                                        value={lastName} 
-                                        placeholder="Last name" 
-                                        autoCapitalize="words" 
-                                        stateFn={setLastname}
-                                    />
-                                    <Input
-                                        keyboardType={"email-address"}
-                                        value={email} 
-                                        placeholder="E-mail" 
-                                        autoCapitalize="none" 
-                                        stateFn={setEmail}
-                                    />
-                                    <Input 
-                                        value={password} 
-                                        placeholder="Password" 
-                                        stateFn={setPassword}    
-                                    />
+                                    ...
                                 </InputContainer>
-                                <Btn loading={loading} text={"Sign Up"} accent onPress={handleSubmit} />
+                                <Btn loading={loading} text={"Sign Up"} accent onPress={handleSubmit} />        // Btn에 loading 이라는 prop 추가
                                 </KeyboardAvoidingView>
                         </Container>
                     </DismissKeyboard>
@@ -2147,36 +2110,14 @@
         };
 
     (components/Auth/Btn.js)
-        import React from "react";
         import { ActivityIndicator, Dimensions, TouchableOpacity } from "react-native";
-        import styled from "styled-components/native";
-        import PropTypes from "prop-types"
-        import colors from "../../colors";
-
-        const { width } = Dimensions.get("screen")      
-
-        const Button = styled.View`
-            margin-bottom: 20px;
-            border: 1px solid ${props => (props.accent ? "transparent" : colors.black)};
-            border-radius: 10px;
-            padding: 15px 0px;
-            align-items: center;
-            width: ${width /2}px;           
-            background-color: ${props => (props.accent ? colors.red : "transparent")}
-            `;
-
-        const Text = styled.Text`
-            font-weight: 600;
-            font-size: 14px;
-            color: ${props => (props.accent ? "white" : "black")};
-        `;
 
         const Btn = ({loading, onPress, text, accent = false}) => (
-            <TouchableOpacity onPress={loading ? null : onPress}>
+            <TouchableOpacity onPress={loading ? null : onPress}>       // loading 중일때는 버튼 눌러도 다음 동작 안일어나도록!
                 <Button accent={accent}>
                     {loading ? (
                         <ActivityIndicator color={accent ? "white" : "black"}/>     // loading일 때 버튼이 안보이도록
-                    ) :(
+                    ) : (
                         <Text accent={accent}>{text}</Text>
                     )}
                 </Button>
@@ -2184,9 +2125,7 @@
         );
 
         Btn.propTypes = {
-            onPress: PropTypes.func.isRequired,
-            text: PropTypes.string.isRequired,
-            acent: PropTypes.bool,
+            ...,
             loading: PropTypes.bool
         };
 
@@ -2213,158 +2152,26 @@
                     }
 
     (screens/Auth/SignUp.js)
-        import React, { useState } from "react";
-        import { StatusBar, KeyboardAvoidingView } from "react-native";
-        import styled from "styled-components/native";
-        import Btn from "../../components/Auth/Btn";
-        import Input from "../../components/Auth/Input";
-        import DismissKeyboard from "../../components/DismissKeyboard";
-        import { isEmail } from "../../utils";
-        import { createAccount } from "../../api";
+        ...
 
-        const Container = styled.View`
-            flex:1 ;
-            justify-content: center;
-            align-items: center;
-        `;
-
-        const InputContainer = styled.View`
-            margin-bottom: 30px;
-        `;
 
         export default ({navigation: { navigate } }) => {
-            const [firstName, setFirstname] = useState("");
-            const [lastName, setLastname] = useState("");
-            const [email, setEmail] = useState("");
-            const [password, setPassword] = useState("");
-            const [loading, setLoading] = useState(false);
+            ...
             const isFormValid = () =>{
-                if(
-                    firstName === "" || 
-                    lastName === "" || 
-                    email === "" || 
-                    password === ""
-                    ) {
-                    alert("All fields are required.");
-                    return false;
-                }
-                if (!isEmail(email)){
-                    alert("Please add a valid email.");
-                    return false;
-                }
-                return true;
-            };
-            const handleSubmit = async () => {
-                if (!isFormValid()){
-                    return;
-                };
-                setLoading(true);
-                try {
-                    const { status } = await createAccount({
-                        first_name: firstName,              // first_name -> (airbnb-api/users/serializers.py의 UserSerializer의 이름 형식을 그대로 가져온 것)
-                        last_name: lastName,
-                        email,
-                        username: email,
-                        password
-                    });
+                ...
                     if(status === 201){
                         alert("Account created. Sign in please.");
                         navigate("SignIn", { email, password });        // SignIn에 email, passwod를 보내자 , documentaion을 보면 navigate는 이동할 곳에, 원하는 정보(email, password)를 같이 보낼 수 있다.
                     }
-                    // go to Sign In
-                } catch(e){
-                    alert("The email is taken");
-                } finally {
-                    setLoading(false);
-                }
-            };
-            const dismissKeyboard = () => Keyboard.dismiss();
-            return(
-                    <DismissKeyboard>
-                        <Container>
-                            <StatusBar barStyle="light-content" />
-                                <KeyboardAvoidingView>
-                                <InputContainer>
-                                    <Input 
-                                        value={firstName} 
-                                        placeholder="First name" 
-                                        autoCapitalize="words" 
-                                        stateFn={setFirstname}
-                                    />
-                                    <Input 
-                                        value={lastName} 
-                                        placeholder="Last name" 
-                                        autoCapitalize="words" 
-                                        stateFn={setLastname}
-                                    />
-                                    <Input
-                                        keyboardType={"email-address"}
-                                        value={email} 
-                                        placeholder="E-mail" 
-                                        autoCapitalize="none" 
-                                        stateFn={setEmail}
-                                    />
-                                    <Input 
-                                        value={password} 
-                                        placeholder="Password" 
-                                        stateFn={setPassword}    
-                                    />
-                                </InputContainer>
-                                <Btn loading={loading} text={"Sign Up"} accent onPress={handleSubmit} />
-                                </KeyboardAvoidingView>
-                        </Container>
-                    </DismissKeyboard>
-            );
-        };
+                ...
 
 
     (screens/Auth/SignIn.js)
-        import React, { useState } from "react";
-        import {StatusBar, KeyboardAvoidingView} from "react-native";
-        import styled from "styled-components/native";
-        import Btn from "../../components/Auth/Btn";
-        import Input from "../../components/Auth/Input";
-        import DismissKeyboard from "../../components/DismissKeyboard";
-
-        const Container = styled.View`
-            flex:1 ;
-            justify-content: center;
-            align-items: center;
-        `;
-
-        const InputContainer = styled.View`
-            margin-bottom: 30px;
-        `;
+        ...
 
         export default props => {           //다음 두줄과 같이 해주면, SignUp.js에서 "route" prop을 통해서 "params"에 email과 password 값이 console.log를 통해서 오는 것 확인 가능
             console.log(props)
-            const [username, setUsername] = useState("");
-            const [password, setPassword] = useState("");
-            const handleSubmit = () => alert(`${username}${password}`);
-            return(
-                <DismissKeyboard>
-                    <Container>
-                        <StatusBar barStyle="light-content" />
-                        <KeyboardAvoidingView behavior='position'>  // behavior = 'position' 해주니 키보드 올라갈때 화면이 엄청 많이 올라감
-                        <InputContainer>
-                            <Input 
-                                value={username} 
-                                placeholder="Username" 
-                                autoCapitalize="none" 
-                                stateFn={setUsername}
-                            />
-                            <Input 
-                                value={password} 
-                                placeholder="Password" 
-                                stateFn={setPassword}    
-                            />
-                        </InputContainer>
-                        <Btn text={"Sign In"} accent onPress={handleSubmit} />
-                        </KeyboardAvoidingView>
-                    </Container>
-                </DismissKeyboard>
-            );
-        };
+            
 
         // 이제 prop에서 route에서 params를 가져오면서 그 안에 email이랑 password를 가져오자
             Object {
@@ -2430,51 +2237,12 @@
             params?.email -> params에 값이 있을때 params.email을 가져온다는 의미 (아무것도 입력 안하고 SignUp할때를 고려한 것) - 이런걸 optional chaining 라고 하는 듯
 
     (screens/Auth/SignIn.js)
-        import React, { useState } from "react";
-        import {StatusBar, KeyboardAvoidingView} from "react-native";
-        import styled from "styled-components/native";
-        import Btn from "../../components/Auth/Btn";
-        import Input from "../../components/Auth/Input";
-        import DismissKeyboard from "../../components/DismissKeyboard";
-
-        const Container = styled.View`
-            flex:1 ;
-            justify-content: center;
-            align-items: center;
-        `;
-
-        const InputContainer = styled.View`
-            margin-bottom: 30px;
-        `;
+        ...
 
         export default ({route: { params }}) => {
             const [username, setUsername] = useState(params?.email);
             const [password, setPassword] = useState(params?.password);
-            const handleSubmit = () => alert(`${username}${password}`);
-            return(
-                <DismissKeyboard>
-                    <Container>
-                        <StatusBar barStyle="light-content" />
-                        <KeyboardAvoidingView behavior='position'>
-                        <InputContainer>
-                            <Input 
-                                value={username} 
-                                placeholder="Username" 
-                                autoCapitalize="none" 
-                                stateFn={setUsername}
-                            />
-                            <Input 
-                                value={password} 
-                                placeholder="Password" 
-                                stateFn={setPassword}    
-                            />
-                        </InputContainer>
-                        <Btn text={"Sign In"} accent onPress={handleSubmit} />
-                        </KeyboardAvoidingView>
-                    </Container>
-                </DismissKeyboard>
-            );
-        };
+        ...
 
 
 # 8.10 Log In part One
