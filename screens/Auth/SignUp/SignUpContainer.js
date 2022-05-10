@@ -31,14 +31,15 @@ export default ({ navigation: { navigate } }) => {
         };
         setLoading(true);
         try {
-            const { status } = api.createAccount({
+            const { status } = await api.createAccount({
                 first_name: firstName,
                 last_name: lastName,
                 email,
                 username: email,
                 password
             });
-            if(status === 201){
+            console.log(status);
+            if(status === 201 || status ===200){
                 alert("Account created. Sign in please.");
                 navigate("SignIn", { email, password });
             }
