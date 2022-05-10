@@ -3353,6 +3353,8 @@
       그리고 이것들은 변하지 않는다.(?)
       override하지 않도록 해야한다. 그냥 data를 save 하지 않고 더 많은 data가 존재하지 않는지 확인해야 한다.
        
+    * 나의 경우 room list를 불러왓을때 이런 warning이 뜸
+      -> Each child in a list should have a unique "key" prop.
 
 # 9.5 RoomCard part One
     (screens/Main/Explore/ExplorePresenter.js)
@@ -3477,19 +3479,9 @@
         export default RoomCard;
 
     (screens/Main/Explore/ExplorePresenter.js)
-        import React from "react";
-        import { ActivityIndicator } from "react-native";
-        import styled from "styled-components/native";
+        ...
         import RoomCard from "../../../components/RoomCard";
-
-        const Container = styled.View`
-            flex: 1;
-            justify-content: center;
-            align-items: center;
-        `;
-
-        const Text = styled.Text``;
-
+        ...
         export default ({rooms}) => {                   // ()=>() 에는 그냥 하면되는데, ()=>{} 이라면 {} 안에 반드시 return 해주어야 한다.
             return(
             <Container>

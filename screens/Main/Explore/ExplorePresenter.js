@@ -1,6 +1,7 @@
 import React from "react";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, ScrollView } from "react-native";
 import styled from "styled-components/native";
+import RoomCard from "../../../components/RoomCard";
 
 
 const Container = styled.View`
@@ -17,7 +18,24 @@ export default ({rooms}) => {
             {
             rooms.length === 0 ? 
             <ActivityIndicator color="black" /> : 
-            rooms.map(room => <Text>{room.name}</Text>)
+            <ScrollView
+                style ={{ width: "100%", marginTop:120}}
+                contentContainerStyle= {{ paddingHorizontal: 15}}
+            >
+                {
+                    rooms.map(room => (
+                        <RoomCard 
+                            key={room.id}
+                            name={room.name}
+                            price={room.price}
+                            photos={room.photos}
+                            id={room.id}
+                            isFav={room.is_fav}
+                            isSuperHost={room.user}
+                        />
+                    ))
+                }
+            </ScrollView>
             }
         </Container>
     )

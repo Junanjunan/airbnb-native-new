@@ -1,7 +1,7 @@
-import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { connect, useDispatch, useSelector } from "react-redux";
+import { NavigationContainer } from "@react-navigation/native";
 import Auth from "../navigation/Auth";
 import Main from "../navigation/Main";
 import { logIn, logOut } from "../redux/usersSlice";
