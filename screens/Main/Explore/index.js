@@ -11,7 +11,7 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
     return {
         getRooms: () => dispatch(getRooms())
-    }
+    };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExploreContainer);

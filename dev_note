@@ -3648,19 +3648,7 @@
         ...
 
     (screens/Main/Explore/ExplorePresenter.js)
-        import React from "react";
-        import { ActivityIndicator, ScrollView } from "react-native";
-        import styled from "styled-components/native";
-        import RoomCard from "../../../components/RoomCard";
-
-
-        const Container = styled.View`
-            flex: 1;
-            justify-content: center;
-            align-items: center;
-        `;
-
-        const Text = styled.Text``;
+        ...
 
         export default ({rooms}) => {
             return(
@@ -3668,8 +3656,8 @@
                 {rooms.length === 0 ? (
                 <ActivityIndicator color="black" />
                 ) : (
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
+                <ScrollView 
+                    showsVerticalScrollIndicator={false}            // 추가한 부분
                     style={{ width: "100%", marginTop:120 }} 
                     contentContainerStyle={{ paddingHorizontal: 15 }}
                 >
@@ -3693,10 +3681,7 @@
         };
 
     (components/RoomCard.js)
-
-        import React from "react";
-        import Pt from "prop-types";
-        import styled from "styled-components/native";
+        ...
         import { Dimensions } from "react-native";
         import Swiper from 'react-native-swiper'
 
@@ -3706,35 +3691,8 @@
             margin-bottom: 25px;
             align-items: flex-start;
         `;
-
-        const Name = styled.Text`
-            font-size: 18px;
-            font-weight: 300;
-            margin-bottom: 7px;
-        `;
-
-        const PriceContainer = styled.View`
-            flex-direction: row;
-        `;
-
-        const PriceText = styled.Text``;
-
-        const PriceNumber = styled.Text`
-            font-weight: 900;
-        `;
-
-        const Superhost = styled.View`
-            padding: 3px 5px
-            border: 1px solid black;
-            border-radius: 5px;
-            margin-bottom: 5px;
-        `;
-
-        const SuperhostText = styled.Text`
-            text-transform: uppercase;
-            font-weight: 500;
-            font-size: 10px;
-        `;
+        
+        ...
 
         const PhotosContainer = styled.View`
             margin-bottom: 10px;
@@ -3749,7 +3707,6 @@
         width: 100%;
         height: 100%;
         `;                          // require로 내부 폴더에서 가져오면 이거 안해도 이미지가 보이지만, source로 온라인 등에서 이미지 가져올때는 이미지 크기 설정안해주면 나타나지를 않는다.
-
 
 
         const RoomCard = ({id, isFav, isSuperHost, photos, name, price,}) => {
@@ -3814,7 +3771,7 @@
             im = Image.open(path)
             im.save(f"./uploads/room_photos/{image+1}.webp", "jpeg")    # 우리의 server와 database의 path가 ./uploads/room_photos 로 지정되어 있기 때문에, path를 바꿔서 저장하지 않는다.
 
-    실행할 때는 python webp2.jpeg.py 로 실행하면 됨
+    실행할 때는 python webp2jpeg.py 로 실행하면 됨
     잘 작동하는지 확인하기 위해서 print(im) 등 넣어보면 됨
 
     ** 이거 안해줘도 나는 오류 안뜨고 되는 듯
@@ -3908,10 +3865,16 @@
         };
 
 # 9.10 Load More
+    (api.js)
+    ...
+    export default{
+        ...
+        rooms: page => callApi("get", `rooms/?page=${page}`)
+    }
     
     (redux/roomsSlice.js)
         ...
-        export const getRooms = (page) => async dispatch => {       // getRoos는 page argument와 함께 호출해야 함
+        export const getRooms = (page) => async dispatch => {       // getRooms는 page argument와 함께 호출해야 함
             try {
                 const {data: {results}} = await api.rooms(page);    // api.rooms도 page argument와 함께 호출해야 함
                 dispatch(setExploreRooms({

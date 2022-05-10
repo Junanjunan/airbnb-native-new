@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import RoomCard from "../../../components/RoomCard";
 
@@ -8,19 +8,32 @@ const Container = styled.View`
     flex: 1;
     justify-content: center;
     align-items: center;
+    padding-horizontal: 15px;
 `;
 
 const Text = styled.Text``;
+
+const FakeBar = styled.View`
+    height: 40px;
+`;
+
+const FakeText = styled.Text`
+`;
 
 export default ({rooms}) => {
     return(
         <Container>
             {
-            rooms.length === 0 ? 
+            rooms.length === 0 ?
             <ActivityIndicator color="black" /> : 
+            <>
+            <FakeBar>
+                <FakeText>Search..</FakeText>
+            </FakeBar>
             <ScrollView
-                style ={{ width: "100%", marginTop:120}}
-                contentContainerStyle= {{ paddingHorizontal: 15}}
+                showsVerticalScrollIndicator={false}
+                style ={{ width: "100%"}}
+                contentContainerStyle= {{ paddingTop: 30}}
             >
                 {
                     rooms.map(room => (
@@ -35,7 +48,11 @@ export default ({rooms}) => {
                         />
                     ))
                 }
+                <TouchableOpacity>
+                    <Text>Load More</Text>
+                </TouchableOpacity>
             </ScrollView>
+            </>
             }
         </Container>
     )
