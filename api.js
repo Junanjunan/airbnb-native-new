@@ -5,7 +5,7 @@ const CallApi = async(method, path, data, jwt) => {
         Authorization: jwt,
         "Content-Type": "application/json"
     };
-    const baseUrl = "https://6929-59-6-83-159.jp.ngrok.io/api/v1";
+    const baseUrl = "https://8ce9-121-130-89-81.jp.ngrok.io/api/v1";
     const fullUrl = `${baseUrl}${path}`;
     if(method === "get" || method === "delete"){
         return axios[method](fullUrl, {headers});
@@ -14,4 +14,11 @@ const CallApi = async(method, path, data, jwt) => {
     }
 };
 
-export const createAccount = form => CallApi("post", "/users/", form);
+// export const createAccount = form => CallApi("post", "/users/", form);
+// export const login = form => CallApi("post", "/users/login", form);
+
+export default{
+    createAccount: form => CallApi("post", "/users/", form),
+    login: form => CallApi("post", "/users/login/", form),
+    rooms: page => CallApi("get", `/rooms/?page=1`)
+}

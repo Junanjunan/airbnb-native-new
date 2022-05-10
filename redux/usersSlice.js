@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import api from "../api";
 
 
 const userSlice = createSlice({
@@ -21,4 +22,17 @@ const userSlice = createSlice({
 
 
 export const {logIn, logOut} = userSlice.actions;
+export const userLogin = form => async dispatch => {
+    try{
+        const { data: {token, id}} = await api.login(form);
+        console.log("--------------------------------------------------");
+        console.log(token);
+        console.log(id);
+        if (id && token){
+            dispatch(logIn({token}));
+        }
+    } catch(e){
+        alert(e);
+    }
+}
 export default userSlice.reducer;
