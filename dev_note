@@ -4188,6 +4188,13 @@
 
         export default roomsSlice.reducer;
 
+    (api.js)
+        export default{
+            ...            
+            rooms: (page=1) => callApi("get", `/rooms/?page=${page}`),
+        }
+            
+
 
 # 9.12 Button and Realm
     전 강의서 하던걸 좀 더 다듬은 것

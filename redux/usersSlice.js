@@ -12,6 +12,7 @@ const userSlice = createSlice({
         logIn(state, action){
             state.isLoggedIn = true;            
             state.token = action.payload.token;
+            state.id = action.payload.id;
         },
         logOut(state, action){
             state.isLoggedIn = false;
@@ -24,12 +25,9 @@ const userSlice = createSlice({
 export const {logIn, logOut} = userSlice.actions;
 export const userLogin = form => async dispatch => {
     try{
-        const { data: {token, id}} = await api.login(form);
-        console.log("--------------------------------------------------");
-        console.log(token);
-        console.log(id);
+        const { data: {id, token}} = await api.login(form);
         if (id && token){
-            dispatch(logIn({token}));
+            dispatch(logIn({token, id}));
         }
     } catch(e){
         alert(e);
