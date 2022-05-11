@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import ExploreContainer from "./ExploreContainer";
-import { getRooms } from "../../../redux/roomsSlice";
+import { getRooms, increasePage } from "../../../redux/roomsSlice";
 
 
 function mapStateToProps(state){
@@ -10,7 +10,8 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
     return {
-        getRooms: () => dispatch(getRooms())
+        getRooms: page => dispatch(getRooms(page)),
+        increasePage: () => dispatch(increasePage())
     };
 }
 

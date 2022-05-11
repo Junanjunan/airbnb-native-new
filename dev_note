@@ -3864,17 +3864,14 @@
             );
         };
 
-# 9.10 Load More
-    (api.js)
-    ...
-    export default{
-        ...
-        rooms: page => callApi("get", `rooms/?page=${page}`)
-    }
-    
+# 9.10 Load More 
+
+    9.11 직전에 순서 정리해서 다시 정리 / 논리 구조 적어놓음
+
+
     (redux/roomsSlice.js)
         ...
-        export const getRooms = (page) => async dispatch => {       // getRooms는 page argument와 함께 호출해야 함
+        export const getRooms = page => async dispatch => {       // getRooms는 page argument와 함께 호출해야 함
             try {
                 const {data: {results}} = await api.rooms(page);    // api.rooms도 page argument와 함께 호출해야 함
                 dispatch(setExploreRooms({
@@ -3981,11 +3978,134 @@
         ...
 
 
+    (api.js)
+    ...
+    export default{
+        ...
+        rooms: page => callApi("get", `rooms/?page=${page}`)
+    }
+
+
+    ** 9.10 Load More 정리 **
+    1. 논리구조
+        하고자 하는 것: 버튼을 누르면(Load More) 새로운 페이지를 받아와서 방들을 더 보여주는 것
+        정보 전달 과정: reducer -> connect -> screen
+                        reducer로 state가 변경되고, 그 변경된 state와 추가된 props를 connect(width mapDispatchToProps) screen에 연결
+        필요한 기능: 
+            1) state의 상태 변경 - reducer 필요
+            2) 변경된 상태를 화면에 나타내는 것
+
+        ( reducer -> state ) -> (XX) -> (Load on Screen)
+            ( reducer -> state ) : reducer를 통해 state를 변경하고
+            (XX): (XX)를 통해 Screen에 표현해주는 것과 연결해주고
+            (Load on Screen): 화면에 나타내주기
+
+            ( reducer -> state ) 의 역할을 하는 것: redux/roomsSlice.js
+            (XX)의 역할을 하는 것: screens/Main/Explore/index.js 의 mapDispatchToProps & connect
+            (Load on Screen): screens/Main/Explore/ExplorePresenter.js
+
+    2. 재정리 (화면 이동 최소화)
+        (redux/roomsSlice.js)
+            // reducer 생성(increasePage(state, action)), 기존 함수에 변수 추가(page)
+            import { createSlice } from "@reduxjs/toolkit";
+            import api from "../api";
+
+            const roomsSlice = createSlice({
+                name: "rooms",
+                initialState: {
+                    explore: {
+                        page: 1,
+                        rooms: []
+                    },
+                    favs: []
+                },
+                reducers: {
+                    setExploreRooms(state, action){
+                        const { explore } = state;
+                        const { payload } = action;
+                        payload.rooms.forEach(payloadRoom => {
+                            const exists = explore.rooms.find(
+                                savedRoom => savedRoom.id === payloadRoom.id
+                                );
+                            if(!exists){
+                                explore.rooms.push(payloadRoom);
+                            }
+                        });
+                    },
+                    increasePage(state, action){
+                        state.explore.page += 1;
+                    }
+                }
+            });
+
+            export const { setExploreRooms, increasePage } = roomsSlice.actions;    // 이해필요 // 여기에 increasePage를 추가를 안하니 index.js에서 불러오기가 안됨 음... export 해주기 위한 설정?
+                                                                                    // roomsSlice의 actions 중 setExploreRooms, increasePage를 export 하도록 정의(한것 같음)
+
+
+            export const getRooms = (page) => async dispatch => {       // getRoos는 page argument와 함께 호출해야 함 - 그래서 비동기로 걸어줌
+                try {
+                    const {data: {results}} = await api.rooms(page);    // api.rooms도 page argument와 함께 호출해야 함 - 그래서 비동기로 걸어줌
+                    dispatch(setExploreRooms({
+                        rooms: results
+                    }));
+                } catch(e) {
+                    console.warn(e);
+                }
+            }
+
+            export default roomsSlice.reducer;
+
+        (screens/Main/Explore/index.js)
+            import ExploreContainer from "./ExploreContainer";
+            import { connect } from "react-redux";
+            import { getRooms, increasePage } from "../../../redux/roomsSlice";
+
+
+            function mapDispatchToProps(dispatch){
+                return {
+                    getRooms: page => dispatch(getRooms(page)),
+                    increasePage: () => dispatch(increasePage())
+                };
+            }
+
+            function mapStateToProps(state){
+                return state.roomsReducer.explore;
+            }
+
+            export default connect(mapStateToProps, mapDispatchToProps)(ExploreContainer);
+
+
+        (screens/Main/Explore/ExploreContainer.js)
+            ...
+            export default ({ getRooms, rooms, page, increasePage}) => {
+                useEffect(() => {               
+                    getRooms(page);                                     // useEffect - page가 변할때마다, 변한 page 값으로 getRooms()를 하자
+                }, [page]);
+                return <ExplorePresenter rooms={rooms} increasePage={increasePage} />; 
+            };
+
+
+        (screens/Main/Explore/ExplorePresenter.js)
+            ...
+            export default ({rooms, increasePage }) => {
+            ...
+                        <TouchableOpacity onPress={increasePage}>
+                            <Text>Load More</Text>
+                        </TouchableOpacity>
+            ...
+
+
+        (api.js)
+            ...
+            export default{
+                ...
+                rooms: page => callApi("get", `rooms/?page=${page}`)
+            }
+        
     여기까지 하고 Load More를 클릭하면 추가적으로 room을 볼러온다.
 
     현재 문제는, 새로고침을 해도 새로운 room을 얻어 오지 않고 모바일에 저장해둔 room을 그대로 가져온다는 것이다.
     우리가 persist 하고 싶은 것은 user의 login 상태나 token, favourite 같은 것들인데, 접속할 때마다 새로워야 할 explore의 room 정보마저 persist하게 된다. 이건 우리가 원하는 것 X
-
 
 # 9.11 Load More Bug Fix
     (screens/Main/Explore/ExploreContainer.js)
@@ -4001,15 +4121,11 @@
             return <ExplorePresenter rooms={rooms} increasePage={increasePage} />; // ExplorePresenter에 rooms를 보낸다? 하지만 아직 console.log를 보면, rooms이 비어있는 array이다. roomsSlice.js 에서 const { data } 부분을 끝내지 않았기 때문 -> /api/v1/rooms/를 보면 count, next, previous, results 값이 있는데, results 값을 받아야 한다.
         };
 
-    위와 같이 하는건 redux로부터 increasePage를 사용하지 않고 state로부터 increasePage를 사용하는 것이다.
-    큰 문제는 없는데. Load More 하고 새로 들어갔을때 기본적으로 Load한 페이지들이 모두 나와있으면서도 Load More를 해도 새로운 창이 나타나지 않는 오류가 있다. 남아있는 페이지만큼 Load More 해준 후에 새 페이지 나온다 함
+    Load More 하고 새로 들어갔을때 기본적으로 Load한 페이지들이 모두 나와있으면서도 Load More를 해도 새로운 창이 나타나지 않는 오류가 있다. 남아있는 페이지만큼 Load More 해준 후에 새 페이지 나온다 함
     이를 고치는 여러 방법이 있는데 강의에서는 state를 화면뒤에서 refresh 시키는 방법을 알려준다 함
 
     (screens/Main/Explore/ExploreContainer.js)
-
-    import React, { useEffect } from "react";
-    import ExplorePresenter from "./ExplorePresenter";
-
+    ...
     export default ({ getRooms, rooms, page, increasePage }) => {
         useEffect(() => {       // 한번만 실행될 useEffect
             getRooms(1);        
@@ -4022,9 +4138,7 @@
     
 
     (redux/roomsSlice.js)
-        import { createSlice } from "@reduxjs/toolkit";
-        import api from "../api";
-
+    ...
         const roomsSlice = createSlice({
             name: "rooms",
             initialState: {

@@ -13,27 +13,29 @@ const roomsSlice = createSlice({
     },
     reducers: {
         setExploreRooms(state,action){
-            const { explore } = state;
             const { payload } = action;
-            payload.rooms.forEach(payloadRoom => {
-                const exists = explore.rooms.find(savedRoom => savedRoom.id === payloadRoom.id);
-                if(!exists){
-                    explore.rooms.push(payloadRoom);
-                }
-            });
-            state.explore.page = payload.page;
+            if(payload.page === 1){
+                state.explore.rooms = payload.rooms;
+                state.explore.page = 1;
+            } else{
+                state.explore.rooms = [...state.explore.rooms, ...payload.rooms];
+            }
+        },
+        increasePage(state, action){
+            state.explore.page += 1;
         }
     }
 });
 
-export const { setExploreRooms, increasePage } = roomsSlice.actions;     // 이해필요
+export const { setExploreRooms, increasePage } = roomsSlice.actions;     // 이해필요 // 여기에 increasePage를 추가를 안하니 index.js에서 불러오기가 안됨 음... export 해주기 위한 설정?
+                                                                        // roomsSlice의 actions 중 setExploreRooms, increasePage를 export 하도록 정의(한것 같음)
 
-export const getRooms = () => async dispatch => {
+export const getRooms = page => async dispatch => {
     try {
-        const {data: {results}} = await api.rooms();
-        // console.log(results);
+        const {data: {results}} = await api.rooms(page);
         dispatch(setExploreRooms({
-            rooms: results
+            rooms: results,
+            page: page
         }));
     } catch(e) {
         console.log(e);
