@@ -5,5 +5,4 @@ import roomsReducer from "./roomsSlice";
 export default combineReducers({
     usersReducer,
     roomsReducer
-
 })

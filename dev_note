@@ -4669,7 +4669,7 @@
 
         const callApi = async (method, path, data, jwt) => {
             const headers = {
-                Authorization: `Bearer ${jwt}`,  // toggleFavs를 하기 위해서, Authorization: jwt를  `Bearer ${jwt}`로 바꿔줘야 함. airbnb-api에서 authentication.py를 보면 token을 x-token asdsasss 이런식으로 x-token뒤에 token을 보내는 것을 확인 가능
+                Authorization: `Bearer ${jwt}`,  // toggleFavs를 하기 위해서, Authorization: jwt를  `Bearer ${jwt}`로 바꿔줘야 함. airbnb-api에서 config/</TOpacity>authentication.py를 보면 token을 x-token asdsasss 이런식으로 x-token뒤에 token을 보내는 것을 확인 가능
                 "Content-Type": "application/json"
             };
             const baseUrl = "http://ba81ae1beb69.ngrok.io/api/v1";
@@ -4686,7 +4686,8 @@
             login: form => callApi("post", "/users/login/", form),
             rooms: (page=1) => callApi("get", `/rooms/?page=${page}`),
             favs: (id) => callApi("get", `/users/${id}/favs`),
-            togleFavs: (userId, roomId, token) => callApi("put", `/users/${userId}/favs/`, { pk: roomId }, token )  // path 마지막에 /있고 없고 차이 큼. /있는 걸로 만들었다면 꼭 넣도록. 안그러면 오류 발생
+            toggleFavs: (userId, roomId, token) => callApi("put", `/users/${userId}/favs/`, { pk: roomId }, token )  // path 마지막에 /있고 없고 차이 큼. /있는 걸로 만들었다면 꼭 넣도록. 안그러면 오류 발생
+                                                                                                                    // python에서 url을 / 없이 끝내도 axios가 불러올때 끝에 / 붙여서 불러오는 듯. -> python에서 url을 /로 끝나도록 설정해주자
         };
 
         // airbnb-api에서 users/views.py를 보면, toogle_favs가 put 인것 확인.
@@ -4729,7 +4730,7 @@
                 <SV></SV>
             </Container>
         );
-
+---5월 12일 다시 시작---
     * roomsSlice.js로 가서, setFavs를 만들고, usersSlice.js에서 호출하고, getFavs에서 dispatch를 하자
     (redux/roomsSlice.js)
         

@@ -23,6 +23,7 @@ const userSlice = createSlice({
 
 
 export const {logIn, logOut} = userSlice.actions;
+
 export const userLogin = form => async dispatch => {
     try{
         const { data: {id, token}} = await api.login(form);
@@ -33,4 +34,27 @@ export const userLogin = form => async dispatch => {
         alert(e);
     }
 }
+
+
+export const getFavs = () => async(dispatch, getState) => {
+    const { usersReducer: {id} } = getState();
+    try {
+        const {data} = await api.favs(id);
+        console.log(data);
+    } catch(e){
+        console.warn(e);
+    }
+}
+
+export const toggleFav = roomId => async(dispatch, getState) => {
+    const {usersReducer: {id, token}} = getState();
+    // console.log(id, token);
+    try{
+        const {status} = await api.toggleFavs(id, roomId, token);
+        console.log(status);
+    } catch(e){
+        console.warn(e);
+    }
+}
+
 export default userSlice.reducer;
