@@ -43,9 +43,12 @@ const LoadMoreText = styled.Text`
 `;
 
 export default ({rooms, increasePage}) => {
+    console.log(rooms);
     return(
         <Container>
-            {rooms.length === 0 ?
+            {
+            rooms.length === 0 ?
+            // true ?
             <ActivityIndicator color="black" /> : 
             <>
             <FakeBar>
@@ -65,7 +68,7 @@ export default ({rooms, increasePage}) => {
                             photos={room.photos}
                             id={room.id}
                             isFav={room.is_fav}
-                            isSuperHost={room.user}
+                            isSuperHost={room.user.superhost}
                         />
                     ))
                 }

@@ -4694,6 +4694,13 @@
         // python 코드(airbnb-api)를 보면, 데이터를 입력해야함(usersViewSet의 toggle_favs에서 pk=request.data.get("pk", None) 부분을 가리킴) 즉, request에 data가 있다. data의 이름은 pk로 하자
         // token도 필요, airbnb-api에서 authentication.py를 보면 token을 x-token asdsasss 이런식으로 x-token뒤에 token을 보내는 것을 확인 가능
         // Authorization: jwt를  `Bearer ${jwt}`로 바꿔줘야 함 -> 나는 오히려 Bearer를 추가해서 오류가 발생 ExplorePresenter 에서 rooms가 undefined로 나옴
+                -> Bearer를 포함해주는게 맞는 듯,
+                Bearer를 빼주고 is_fav를 계속 받아오지 못했는데 이를 python쪽에서 request.user를 확인했더니 AnonymousUser로 나옴, Bearer를 추가해주고 부터, native 쪽에서 login한 user가 정상적으로 출력
+
+            ** Authorizion에 Bearer를 넣은상태로 login 하면  raise DecodeError("Not enough segments") from err / jwt.exceptions.DecodeError: Not enough segments 식의 에러가 나와서 로그인 안돼서
+                Bearer를 빼주고 login을 하고나면,
+                request.user가 AnonymousUser로 나오고, Bearer를 해준상태로 Load More 등을 하면 로그인한 유저가 정상적으로 출력
+                Bearer를 설정하는 것을 각각 다르게 해준듯..... 이부분 잡아야 함
 
     (redux/usersSlice.js)
         ...

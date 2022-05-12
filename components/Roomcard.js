@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import utils from "../utils";
 import { useDispatch } from "react-redux";
 import { toggleFav } from "../redux/usersSlice";
+import colors from "../colors";
 
 const {width, height} = Dimensions.get("screen");
 
@@ -80,17 +81,19 @@ const TOpacity = styled.TouchableOpacity`
 
 const RoomCard = ({id, isFav, isSuperHost, photos, name, price}) => {
     const dispatch = useDispatch();
-    // console.log(photos);
-    console.log(photos);
     return(
         <Container>
             <TOpacity onPress={() => dispatch(toggleFav(id))}>
                 <FavButton>
-                <Ionicons size={15} name={utils.isAndroid() ? "md-heart-outline" : "heart-outline"} />
+                    <Ionicons 
+                        size={15} 
+                        name={utils.isAndroid() ? (isFav ? "heart" : "heart-outline") : (isFav ? "heart-circle" : "heart-dislike-outline")}
+                        color={isFav ? colors.red : "black"}
+                        />
                 </FavButton>
             </TOpacity>
             <PhotosContainer>
-                {true ? (
+                {photos.length === 0 ? (
                     <SlideImage 
                         resizeMode="repeat"
                         source={require("../assets/roomDefault.jpg")}

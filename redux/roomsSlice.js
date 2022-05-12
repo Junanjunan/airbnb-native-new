@@ -33,15 +33,16 @@ const roomsSlice = createSlice({
 export const { setExploreRooms, increasePage, setFavs } = roomsSlice.actions;     // 이해필요 // 여기에 increasePage를 추가를 안하니 index.js에서 불러오기가 안됨 음... export 해주기 위한 설정?
                                                                         // roomsSlice의 actions 중 setExploreRooms, increasePage를 export 하도록 정의(한것 같음)
 
-export const getRooms = page => async dispatch => {
+export const getRooms = page => async (dispatch, getState) => {
+    const {usersReducer: {token}} = getState();
     try {
-        const {data: {results}} = await api.rooms(page);
+        const {data: {results}} = await api.rooms(page, token);
         dispatch(setExploreRooms({
             rooms: results,
             page: page
-        }));
+        }))
     } catch(e) {
-        console.log(e);
+        console.warn(e);
     }
 }
 

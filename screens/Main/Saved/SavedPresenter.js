@@ -19,27 +19,26 @@ const NoFavs = styled.Text``;
 const Text = styled.Text``;
 
 export default ({rooms}) => {
-    // console.log(typeof rooms);
+    // console.log(rooms);
     return(
         <Container>
         <Title>Favourites</Title>
         <SV>
             {
-            rooms.length !== 0 ? 
-            // true ?
+            // rooms.length !== 0 ?
+            false ? 
             (
                 rooms.map(room=>(
                     <RoomCard
                         key={room.id}
                         name={room.name}
                         price={room.price}
-                        photos={rooms.photos}
+                        photos={room.photos}
                         id={room.id}
-                        isFav={rooms.is_fav}
+                        isFav={room.is_fav}
                         isSuperHost={room.user.superhost}
                     />
                 ))
-                // <NoFavs>Hi</NoFavs>
             ) : (
                 <NoFavs>You don't have any favourites</NoFavs>
             )}
