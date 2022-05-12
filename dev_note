@@ -4685,7 +4685,7 @@
             createAccount: form => callApi("post", "/users/", form),
             login: form => callApi("post", "/users/login/", form),
             rooms: (page=1) => callApi("get", `/rooms/?page=${page}`),
-            favs: (id) => callApi("get", `/users/${id}/favs`),
+            favs: (id) => callApi("get", `/users/${id}/favs`),      // favs/ 로 끝내야함!!! 실제로 url이 뭘로 끝나는지 보고 해봐야함 - web에서 접속해봐서 ! 이거 안하면 진짜 어디서 오류가 난지 알수도 없이 헤매게 됨
             toggleFavs: (userId, roomId, token) => callApi("put", `/users/${userId}/favs/`, { pk: roomId }, token )  // path 마지막에 /있고 없고 차이 큼. /있는 걸로 만들었다면 꼭 넣도록. 안그러면 오류 발생
                                                                                                                     // python에서 url을 / 없이 끝내도 axios가 불러올때 끝에 / 붙여서 불러오는 듯. -> python에서 url을 /로 끝나도록 설정해주자
         };
@@ -4693,7 +4693,7 @@
         // airbnb-api에서 users/views.py를 보면, toogle_favs가 put 인것 확인.
         // python 코드(airbnb-api)를 보면, 데이터를 입력해야함(usersViewSet의 toggle_favs에서 pk=request.data.get("pk", None) 부분을 가리킴) 즉, request에 data가 있다. data의 이름은 pk로 하자
         // token도 필요, airbnb-api에서 authentication.py를 보면 token을 x-token asdsasss 이런식으로 x-token뒤에 token을 보내는 것을 확인 가능
-        // Authorization: jwt를  `Bearer ${jwt}`로 바꿔줘야 함
+        // Authorization: jwt를  `Bearer ${jwt}`로 바꿔줘야 함 -> 나는 오히려 Bearer를 추가해서 오류가 발생 ExplorePresenter 에서 rooms가 undefined로 나옴
 
     (redux/usersSlice.js)
         ...
@@ -4730,7 +4730,7 @@
                 <SV></SV>
             </Container>
         );
----5월 12일 다시 시작---
+
     * roomsSlice.js로 가서, setFavs를 만들고, usersSlice.js에서 호출하고, getFavs에서 dispatch를 하자
     (redux/roomsSlice.js)
         
@@ -4830,7 +4830,7 @@
 
         const NoFavs = styled.Text``;
 
-        const Test = styled.Text``;
+        const Text = styled.Text``;
 
         export default ({rooms}) => (
             <Container>

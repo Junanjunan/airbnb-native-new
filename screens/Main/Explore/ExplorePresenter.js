@@ -45,8 +45,7 @@ const LoadMoreText = styled.Text`
 export default ({rooms, increasePage}) => {
     return(
         <Container>
-            {
-            rooms.length === 0 ?
+            {rooms.length === 0 ?
             <ActivityIndicator color="black" /> : 
             <>
             <FakeBar>

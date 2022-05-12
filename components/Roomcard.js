@@ -80,6 +80,8 @@ const TOpacity = styled.TouchableOpacity`
 
 const RoomCard = ({id, isFav, isSuperHost, photos, name, price}) => {
     const dispatch = useDispatch();
+    // console.log(photos);
+    console.log(photos);
     return(
         <Container>
             <TOpacity onPress={() => dispatch(toggleFav(id))}>
@@ -88,7 +90,7 @@ const RoomCard = ({id, isFav, isSuperHost, photos, name, price}) => {
                 </FavButton>
             </TOpacity>
             <PhotosContainer>
-                {photos.length === 0 ? (
+                {true ? (
                     <SlideImage 
                         resizeMode="repeat"
                         source={require("../assets/roomDefault.jpg")}
@@ -118,17 +120,17 @@ const RoomCard = ({id, isFav, isSuperHost, photos, name, price}) => {
     )
 }
 
-RoomCard.proptTypes = {
-    id: Pt.number.isRequired,
-    isFav: Pt.bool.isRequired,
-    isSuperHost: Pt.bool.isRequired,
-    photos: Pt.arrayOf(
-        Pt.shape({
-            file: Pt.string
-        })
-    ),
-    name: Pt.string.isRequired,
-    price: Pt.number.isRequired
-};
+// RoomCard.proptTypes = {
+//     id: Pt.number.isRequired,
+//     isFav: Pt.bool.isRequired,
+//     isSuperHost: Pt.bool.isRequired,
+//     photos: Pt.arrayOf(
+//         Pt.shape({
+//             file: Pt.string
+//         })
+//     ),
+//     name: Pt.string.isRequired,
+//     price: Pt.number.isRequired
+// };
 
 export default RoomCard;
