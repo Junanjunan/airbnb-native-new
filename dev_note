@@ -4702,6 +4702,94 @@
                 request.user가 AnonymousUser로 나오고, Bearer를 해준상태로 Load More 등을 하면 로그인한 유저가 정상적으로 출력
                 Bearer를 설정하는 것을 각각 다르게 해준듯..... 이부분 잡아야 함
 
+
+    ********** Bearer 포함 여부 정리 ************
+    1.
+        const headers = {
+            Authorization: `Bearer ${jwt}`,
+            "Content-Type": "application/json"
+        };
+    
+    2.
+        const headers = {
+            Authorization: jwt,
+            "Content-Type": "application/json"
+        };
+
+    1과 2중 무엇을 해야 하나?
+    -> 방법을 먼저 제시하고 그 이유를 설명하자
+        1) 방법:
+            2. 선택
+                (api.js)
+                    const headers = {
+                        Authorization: jwt,
+                        "Content-Type": "application/json"
+                    };
+
+                (redux/usersSlice.js)
+                    ...
+                    export const userLogin = form => async dispatch => {
+                        try{
+                            const { data: {id, token}} = await api.login(form);
+                            if (id && token){
+                                dispatch(logIn({token, id}));
+                            }
+                        } catch(e){
+                    ...
+
+                    export const getFavs = () => async (dispatch, getState) => {
+                        const { usersReducer: {id, token} } = getState();
+                        try {
+                            const { data } = await api.favs(id, `Bearer ${token}`);
+                            dispatch(setFavs(data));
+                        } catch(e){
+                            console.warn(e);
+                        }
+                    }
+                    
+                    export const toggleFav = roomId => async (dispatch, getState) => {
+                        const {usersReducer: {id, token}} = getState();
+                        try{
+                            const {status} = await api.toggleFavs(id, roomId, `Bearer ${token}`);
+                        } catch(e){
+                            console.warn(e);
+                        }
+                    }
+
+                (redux/roomsSlice.js)
+                    ...
+                    export const getRooms = page => async (dispatch, getState) => {
+                        const {usersReducer: {token}} = getState();
+                        try {
+                            const {data: {results}} = await api.rooms(page, `Bearer ${token}`);
+                            dispatch(setExploreRooms({
+                                rooms: results,
+                                page: page
+                            }))
+                        } catch(e) {
+                            console.warn(e);
+                        }
+                    }
+
+
+        2. 이유 설명
+            python에서 login을 하는 부분을 보면
+            (airbnb_api_new/config/authentication.py)
+            token을 xjwt, jwt_token = token.split("")
+            으로 해서 X-JWT 와 뒤에 오는 실제 토큰 내용을 분리해서 처리해주는 것으로 되어있다.
+            따라서 로그인을 할때는 X-JWT(또는 Bearer)가 온전히 포함되도록 token을 받아야 한다.
+            X-JWT가 포함된 token을 받은 python 서버에서 decode를 해서 X-JWT가 빠진 알맹이의 token을 return 해준다.
+
+            native 쪽에서는 python에서 보내준 X-JWT가 없는 token을 받아서 state에 저장
+            (redux/usersSlice.js/getFavs, toogleFav), (redux/roomsSlice.js/getRooms) 들은
+            모두 state에 저장된 알맹이의 token 값을 가지고 다시 python 쪽에 요청을 보내서 방과 favs 등에 대한 정보를 받아오는 것
+            따라서
+            native 쪽에서는 X-JWT가 없는 token을 가지고 있고 (token)
+            python 쪽에서는 X-JWT가 있는 온전한 token(`Bearer ${token}`)이 들어와야 data를 건내줄 수 있기 때문에
+            위와 같이 처리
+    ****************************************************************************
+
+
     (redux/usersSlice.js)
         ...
         export const toggleFav = roomId => async (dispatch, getState) => {     // airbnb-api를 보면 togglefavs()에 permission이 있다. user가 필요하고 따라서 로그인이 되어있어야 한다. 그리고 user의 id를 받아야 한다. getState로부터 id, token을 받아올 것임
@@ -4902,7 +4990,7 @@
         export const getFavs = () => async (dispatch, getState) => {
             const { usersReducer: {id, token} } = getState();
             try {
-                const {data} = await api.favs(id, token);
+                const {data} = await api.favs(id,`Bearer ${token}`);
                 dispatch(setFavs(data));
             } catch(e){
                 console.warn(e);
@@ -4915,7 +5003,7 @@
         export const getRooms = (page) => async (dispatch, getState) => {
             const {usersReducer: {token}} = getState();
             try{
-                const {data: { results } } = await api.rooms(page, token);
+                const {data: { results } } = await api.rooms(page,`Bearer ${token}`);
                 dispatch(setExploreRooms({
                     rooms: results,
                     page

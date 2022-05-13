@@ -43,7 +43,7 @@ const LoadMoreText = styled.Text`
 `;
 
 export default ({rooms, increasePage}) => {
-    console.log(rooms);
+    // console.log(rooms);
     return(
         <Container>
             {
@@ -69,6 +69,7 @@ export default ({rooms, increasePage}) => {
                             id={room.id}
                             isFav={room.is_fav}
                             isSuperHost={room.user.superhost}
+                            roomObj={room}
                         />
                     ))
                 }

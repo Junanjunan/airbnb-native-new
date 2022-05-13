@@ -8,6 +8,8 @@ import utils from "../utils";
 import { useDispatch } from "react-redux";
 import { toggleFav } from "../redux/usersSlice";
 import colors from "../colors";
+import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const {width, height} = Dimensions.get("screen");
 
@@ -79,47 +81,52 @@ const TOpacity = styled.TouchableOpacity`
     z-index: 10;
 `;
 
-const RoomCard = ({id, isFav, isSuperHost, photos, name, price}) => {
+const RoomCard = ({id, isFav, isSuperHost, photos, name, price, roomObj}) => {
     const dispatch = useDispatch();
+    const navigation = useNavigation();
+    // console.log(roomObj);
+    // console.log({...roomObj});
     return(
-        <Container>
-            <TOpacity onPress={() => dispatch(toggleFav(id))}>
-                <FavButton>
-                    <Ionicons 
-                        size={15} 
-                        name={utils.isAndroid() ? (isFav ? "heart" : "heart-outline") : (isFav ? "heart-circle" : "heart-dislike-outline")}
-                        color={isFav ? colors.red : "black"}
+        <TouchableOpacity onPress={() => navigation.navigate("RoomDetail", { ...roomObj })}>
+            <Container>
+                <TOpacity onPress={() => dispatch(toggleFav(id))}>
+                    <FavButton>
+                        <Ionicons 
+                            size={15} 
+                            name={utils.isAndroid() ? (isFav ? "heart" : "heart-outline") : (isFav ? "heart-circle" : "heart-dislike-outline")}
+                            color={isFav ? colors.red : "black"}
+                            />
+                    </FavButton>
+                </TOpacity>
+                <PhotosContainer>
+                    {photos.length === 0 ? (
+                        <SlideImage 
+                            resizeMode="repeat"
+                            source={require("../assets/roomDefault.jpg")}
                         />
-                </FavButton>
-            </TOpacity>
-            <PhotosContainer>
-                {photos.length === 0 ? (
-                    <SlideImage 
-                        resizeMode="repeat"
-                        source={require("../assets/roomDefault.jpg")}
-                    />
-                ) : (
-                    <Swiper
-                        paginationStyle={{marginBottom: -15}}
-                        dotColor={"gray"}
-                        activeDotColor={"white"}
-                        >
-                        {photos.map(photo => (
-                            <SlideImage key={photo.id} source={{ uri: photo.file }} /> 
-                        ))}
-                    </Swiper>
-                )}
-            </PhotosContainer>
-            {isSuperHost ? (
-                <SuperHost>
-                    <SuperHostText>Superhost</SuperHostText>
-                </SuperHost>
-            ) : null}
-            <Name>{name}</Name>
-            <PriceContainer>
-                <PriceNumber>{price}</PriceNumber><PriceText>/night</PriceText>
-            </PriceContainer>
-        </Container>
+                    ) : (
+                        <Swiper
+                            paginationStyle={{marginBottom: -15}}
+                            dotColor={"gray"}
+                            activeDotColor={"white"}
+                            >
+                            {photos.map(photo => (
+                                <SlideImage key={photo.id} source={{ uri: photo.file }} /> 
+                            ))}
+                        </Swiper>
+                    )}
+                </PhotosContainer>
+                {isSuperHost ? (
+                    <SuperHost>
+                        <SuperHostText>Superhost</SuperHostText>
+                    </SuperHost>
+                ) : null}
+                <Name>{name}</Name>
+                <PriceContainer>
+                    <PriceNumber>{price}</PriceNumber><PriceText>/night</PriceText>
+                </PriceContainer>
+            </Container>
+        </TouchableOpacity>
     )
 }
 

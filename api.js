@@ -2,11 +2,11 @@ import axios from "axios";
 
 const callApi = async (method, path, data, jwt) => {
     const headers = {
-        Authorization: `Bearer ${jwt}`,
-        // Authorization: jwt,
+        // Authorization: `Bearer ${jwt}`,
+        Authorization: jwt,
         "Content-Type": "application/json"
     };
-    const baseUrl = "https://2994-175-193-30-191.jp.ngrok.io/api/v1";
+    const baseUrl = "https://4e89-112-187-140-235.jp.ngrok.io/api/v1";
     const fullUrl = `${baseUrl}${path}`;
     if(method === "get" || method === "delete"){
         return axios[method](fullUrl, {headers});

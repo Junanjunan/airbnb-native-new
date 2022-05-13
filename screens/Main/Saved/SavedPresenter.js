@@ -19,14 +19,14 @@ const NoFavs = styled.Text``;
 const Text = styled.Text``;
 
 export default ({rooms}) => {
-    // console.log(rooms);
+    console.log(rooms);
     return(
         <Container>
         <Title>Favourites</Title>
         <SV>
             {
-            // rooms.length !== 0 ?
-            false ? 
+            rooms.length !== 0 ?
+            // false ? 
             (
                 rooms.map(room=>(
                     <RoomCard
