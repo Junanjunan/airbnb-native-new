@@ -12,6 +12,7 @@ import colors from "../colors";
 import utils from "../utils";
 import Room from "../screens/Main/Room";
 import BackBtn from "../components/Auth/BackBtn";
+import Search from "../screens/Main/Search";
 
 
 // const Main = createBottomTabNavigator();
@@ -84,6 +85,7 @@ export default () => {
                     )
                 }}
             />
+            <MainNavigator.Screen name="Search" component={Search} />
         </MainNavigator.Navigator>
     );
 }
