@@ -1,9 +1,12 @@
 import React, { Fragment, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { TextInput } from "react-native";
+import { ActivityIndicator, Keyboard, TextInput } from "react-native";
 import styled from "styled-components/native";
 import DismissKeyboard from "../../../components/DismissKeyboard";
 import colors from "../../../colors";
+import api from "../../../api";
+import RoomCard from "../../../components/RoomCard";
+
 
 const Container = styled.View``;
 
@@ -14,7 +17,7 @@ const SearchContainer = styled.View`
     justify-content: space-between;
     align-items: center;
 `;
-
+ActivityIndicator
 const CancelContainer = styled.TouchableOpacity``;
 
 const CancelText = styled.Text``;
@@ -51,9 +54,29 @@ const Filter = styled.TextInput`
     width: 80px;
 `;
 
-const SearchBtn = styled.TouchableOpacity``;
+const SearchBtn = styled.TouchableOpacity`
+    background-color: ${colors.red};
+    padding: 10px;
+    margin: 10px 30px;
+    border-radius: 10px;
+    align-items: center;
+`;
 
-const SearchText = styled.Text``;
+const SearchText = styled.Text`
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+`;
+
+const ResultsText = styled.Text`
+    margin-top: 10px;
+    font-size: 16px;
+    text-align: center;
+`;
+
+const Results = styled.ScrollView`
+    margin-top: 15px;
+`;
 
 export default () => {
     const navigation = useNavigation();
@@ -61,15 +84,41 @@ export default () => {
     const [bedrooms, setBedrooms] = useState();
     const [bathrooms, setBathrooms] = useState();
     const [maxPrice, setMaxPrice] = useState();
-    const submit = () => {
+    const [searching, setSearching] = useState(false);
+    const [results, setResults] = useState();
+    const triggerSearch = async () => {
+        setSearching(true);
         const form = {
-            ...CancelContainer(beds && {beds}),
-            ...CancelContainer(bedrooms && {bedrooms}),
-            ...CancelContainer(bathrooms && {bathrooms}),
-            ...CancelContainer(maxPrice && {max_price: maxPrice})
+            ...(beds && {beds}),
+            ...(bedrooms && {bedrooms}),
+            ...(bathrooms && {bathrooms}),
+            ...(maxPrice && {max_price: maxPrice})
         };
-        console.log(form);
+        try{
+            const {data} = await api.search(form, "nn");
+            setResults(data);
+        } catch(e){
+            console.warn(e)
+        } finally{
+            Keyboard.dismiss();
+            setSearching(false);
+        }
     }
+    // const submit = async () => {
+    //     const form = {
+    //         ...(beds && {beds}),
+    //         ...(bedrooms && {bedrooms}),
+    //         ...(bathrooms && {bathrooms}),
+    //         ...(maxPrice && {max_price: maxPrice})
+    //     };
+    //     try{
+    //         const {data} = await api.search(form, "nn");
+    //         console.log(data)
+    //     } catch(e){
+    //         console.warn(e)
+    //     }
+    //     // console.log(form);
+    // }
     return (
         <DismissKeyboard>
             <>
@@ -123,9 +172,24 @@ export default () => {
                     </FilterConatiner>
                 </FiltersContainer>
             </Container>
-            <SearchBtn onPress={submit}>
-                <SearchText>Search</SearchText>
+            <SearchBtn onPress={searching ? null : triggerSearch}>
+                {searching ? <ActivityIndicator color="white" /> : <SearchText>Search</SearchText>}
             </SearchBtn>
+            {results ? <ResultsText>We found {results.count} rooms</ResultsText> : null}
+            <Results contentContainerStyle={{paddingHorizontal: 15}}>
+                {results?.results?.map(room =>
+                    <RoomCard
+                    key={room.id}
+                    name={room.name} 
+                    price={room.price}
+                    photos={room.photos} 
+                    id={room.id} 
+                    isFav={room.is_fav}
+                    isSuperHost={room.user.superhost}
+                    roomObj={room}
+                />
+                )}
+            </Results>
             </>
         </DismissKeyboard>
     );
