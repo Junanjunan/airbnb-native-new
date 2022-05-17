@@ -78,32 +78,7 @@ const Results = styled.ScrollView`
     margin-top: 15px;
 `;
 
-export default () => {
-    const navigation = useNavigation();
-    const [beds, setBeds] = useState();
-    const [bedrooms, setBedrooms] = useState();
-    const [bathrooms, setBathrooms] = useState();
-    const [maxPrice, setMaxPrice] = useState();
-    const [searching, setSearching] = useState(false);
-    const [results, setResults] = useState();
-    const triggerSearch = async () => {
-        setSearching(true);
-        const form = {
-            ...(beds && {beds}),
-            ...(bedrooms && {bedrooms}),
-            ...(bathrooms && {bathrooms}),
-            ...(maxPrice && {max_price: maxPrice})
-        };
-        try{
-            const {data} = await api.search(form, "nn");
-            setResults(data);
-        } catch(e){
-            console.warn(e)
-        } finally{
-            Keyboard.dismiss();
-            setSearching(false);
-        }
-    }
+export default ({navigation, beds, setBeds, bedrooms, setBedrooms, bathrooms, setBathrooms, maxPrice, setMaxPrice, searching, triggerSearch, results}) => {
     // const submit = async () => {
     //     const form = {
     //         ...(beds && {beds}),

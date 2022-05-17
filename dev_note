@@ -6293,70 +6293,7 @@
             return (                // React.Children.only expected to receive a single React element child. 라고 뜨면 <Fragment></Fragment> 안 넣어줘서 생기는 오류라고 보면 될 듯
                 <DismissKeyboard>
                     <>              
-                    <Container>
-                        <SearchContainer>
-                            <SearchBar autoFocus={true} placeholder="Search by city..." />
-                            <CancelContainer onPress={() => navigation.goBack()}>
-                                <CancelText>Cancel</CancelText>
-                            </CancelContainer>
-                        </SearchContainer>
-                        <FiltersContainer
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 20 }}
-                >
-                    <FilterContainer>
-                        <FilterLabel>Beds</FilterLabel>
-                        <Filter
-                            onChangeText={text => setBeds(text)} 
-                            value={beds} 
-                            placeholder="0" 
-                            keyboardType={"number-pad"} />
-                    </FilterContainer>
-                    <FilterContainer>
-                        <FilterLabel>Bedrooms</FilterLabel>
-                        <Filter
-                            onChangeText={text => setBedrooms(text)} 
-                            value={bedrooms} 
-                            placeholder="0" 
-                            keyboardType={"number-pad"} />
-                    </FilterContainer>
-                    <FilterContainer>
-                        <FilterLabel>Bathrooms</FilterLabel>
-                        <Filter
-                            onChangeText={text => setBathrooms(text)} 
-                            value={bathrooms} 
-                            placeholder="0" 
-                            keyboardType={"number-pad"} />
-                    </FilterContainer>
-                    <FilterContainer>
-                        <FilterLabel>Max. price</FilterLabel>
-                        <Filter 
-                            onChangeText={text => setMaxPrice(text)}
-                            value={maxPrice} 
-                            placeholder="$0" 
-                            keyboardType={"number-pad"} />
-                    </FilterContainer>
-                    </FiltersContainer>
-                    </Container>
-                    <SearchBtn onPress={searching ? null: triggerSearch}>
-                        {searching ? <ActivityIndicator color="white"/> : <SearchText>Search</SearchText>}
-                    </SearchBtn>
-                    {results ? <ResultsText>We found {results.count} rooms</ResultsText> : null}
-                    <Results contentContainerStyle={{paddingHorizontal: 15}}>
-                    {results?.results?.map(room =>
-                        <RoomCard
-                        key={room.id}
-                        name={room.name} 
-                        price={room.price}
-                        photos={room.photos} 
-                        id={room.id} 
-                        isFav={room.is_fav}
-                        isSuperHost={room.user.superhost}
-                        roomObj={room}
-                        />
-                        )}
-                    </Results>
+                    ...
                     </>
                 </DismissKeyboard>
             );
@@ -6389,7 +6326,7 @@
         export default ({token}) => {
             ...
                 try {
-                    const {data} = await api.search(form, token);
+                    const {data} = await api.search(form, `Bearer ${token}`);
                     setResults(data);
             ...
 
@@ -6475,30 +6412,8 @@
 # 13.1 Map View Cards
     
     (screens/Main/Map.js)
-        import React from "react";
-        import MapView from "react-native-maps";
-        import { connect } from "react-redux";
-        import { Dimensions, StyleSheet } from "react-native";
-        import styled from "styled-components/native";
+        ...
 
-        const {width, height} = Dimensions.get("window");
-
-        const Container = styled.View`
-            flex: 1;
-            justify-content: center;
-            align-items: center;
-        `;
-
-        const ScrollView = styled.ScrollView`
-        position:absolute;
-        bottom: 50px;
-        `;
-
-        const RoomContainer = styled.View`
-        background-color: transparent;
-        width: ${width}px;
-        align-items: center;
-        `;
 
         const RoomCard = styled.View`
         background-color: white;
@@ -6592,6 +6507,8 @@
         import { Dimensions, StyleSheet } from "react-native";
         import styled from "styled-components/native";
         import { set } from "react-native-reanimated";
+        // Requiring module "node_modules\react-native-reanimated\src\Animated.js", which threw an exception: Error: Reanimated 2 failed to create a worklet, maybe you forgot to add Reanimated's babel plugin? 
+        // 위와 같은 오류 발생시https://docs.expo.dev/versions/latest/sdk/reanimated/#installation
 
         const Map = ({ rooms }) => {
             const [currentIndex, setCurrentIndex] = useState(0);
