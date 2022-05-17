@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { Dimensions, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import { set } from "react-native-reanimated";
 import styled from "styled-components/native";
+import colors from "../../colors";
 
 
 
@@ -58,11 +59,59 @@ const RoomPrice = styled.Text`
     font-size: 15px;
 `;
 
+const MarkerWrapper = styled.View`
+    align-items: center;
+`;
+
+const MarkerContainer = styled.View`
+    background-color: ${props=> (props.selected ? colors.red : colors.green)};
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+`;
+
+const MarkerText = styled.Text`
+    color: white;
+    font-size: 18px;
+`;
+
+const MarkerTriangle = styled.View`
+    border: 10px solid transparent;
+    width: 10px;
+    border-top-color: ${props => (props.selected ? colors.red : colors.green)}
+`;
+
+const RoomMarker = ({selected, price}) => {
+    return(
+        <MarkerWrapper>
+            <MarkerContainer selected={selected} >
+                <MarkerText>${price}</MarkerText>
+            </MarkerContainer>
+            <MarkerTriangle selected={selected} />
+        </MarkerWrapper>
+    )
+}
+
 const Map = ({ rooms }) => {
-    console.log(rooms);
+    const mapRef = useRef();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const onScroll = (e) => {
+        const { nativeEvent: { contentOffset:{ x }}} = e;
+        const position = Math.abs(Math.round(x/width));
+        setCurrentIndex(position);
+    };
+    useEffect(() => {
+        mapRef.current?.animateCamera({
+            center: {
+                latitude: parseFloat(rooms[currentIndex].lat),
+                longitude: parseFloat(rooms[currentIndex].lng)
+            }
+        },{duration:2000})
+    }, [currentIndex]);
     return(
         <Container>
-            <MapView 
+            <MapView
+                ref={mapRef}
                 style={StyleSheet.absoluteFill}
                 camera={{
                     center:{
@@ -72,13 +121,25 @@ const Map = ({ rooms }) => {
                     altitude:700,
                     pitch:0,
                     heading:0,
-                    zoom:1
-                }}
-            />
+                    zoom:15
+            }}>
+                {rooms?.map((room, index) =>
+                    <Marker
+                        key={room.id}
+                        coordinate={{
+                            latitude: parseFloat(room.lat),
+                            longitude: parseFloat(room.lng)
+                        }}>
+                            <RoomMarker selected={index===currentIndex} price={room.price} />
+                        </Marker>
+                    )}
+            </MapView>
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled
+                onScroll={onScroll}
+                scrollEvntThrottle={100}    // Evnt? Event?
             >
                 {rooms?.map(room =>
                     <RoomContainer>
