@@ -108,9 +108,18 @@ const Map = ({ rooms }) => {
             }
         },{duration:2000})
     }, [currentIndex]);
+    const onRegionChangeComplete = async () => {
+        try{
+            const boundaries = await mapRef.current?.getMapBoundaries();
+            console.log(boundaries);
+        } catch(e){
+
+        }
+    }
     return(
         <Container>
             <MapView
+                onRegionChangeComplete={onRegionChangeComplete}
                 ref={mapRef}
                 style={StyleSheet.absoluteFill}
                 camera={{
@@ -142,7 +151,7 @@ const Map = ({ rooms }) => {
                 scrollEvntThrottle={100}    // Evnt? Event?
             >
                 {rooms?.map(room =>
-                    <RoomContainer>
+                    <RoomContainer key={room.id}>
                         <RoomCard>
                             <RoomPhoto 
                                 source={
