@@ -12,8 +12,8 @@ export default () => {
     return (
         <NavigationContainer>
     
-        {isLoggedIn? <Main /> : <Auth />} 
+        {isLoggedIn? <Main /> : <Auth />}
 
-    </NavigationContainer>
+        </NavigationContainer>
     );
 };

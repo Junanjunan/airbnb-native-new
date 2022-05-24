@@ -23,3 +23,6 @@
     https://xiubindev.tistory.com/100
         컴포넌트가 화면에 처음 렌더링 될 때 한번만 실행하고 싶을때는 deps 에 빈배열
         배열 생략시에는 리렌더링 될대 마다 실행된다.
+
+* useSelector / useDispatch
+    https://juhi.tistory.com/23
