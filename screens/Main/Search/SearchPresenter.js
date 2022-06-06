@@ -17,7 +17,7 @@ const SearchContainer = styled.View`
     justify-content: space-between;
     align-items: center;
 `;
-ActivityIndicator
+
 const CancelContainer = styled.TouchableOpacity``;
 
 const CancelText = styled.Text``;
