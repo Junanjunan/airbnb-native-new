@@ -3165,7 +3165,7 @@
         export default ({route: { params }}) => {
             const dispatch = useDispatch();
             const [email, setEmail] = useState(params?.email || "taltalrealty@naver.com");
-            const [password, setPassword] = useState(params?.password || "52848625a");
+            const [password, setPassword] = useState(params?.password || "123");
     
     (redux/roomsSlice.js)
         import { createSlice } from "@reduxjs/toolkit";

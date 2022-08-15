@@ -44,7 +44,7 @@ const LoadMoreText = styled.Text`
 `;
 
 export default ({rooms, increasePage}) => {
-    // console.log(rooms);
+    console.log(rooms);
     const navigation = useNavigation();
     return(
         <Container>
